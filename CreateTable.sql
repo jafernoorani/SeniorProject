@@ -1,0 +1,5 @@
+CREATE TABLE Demographics (
+age INTEGER PRIMARY KEY,
+weight INTEGER NOT NULL,
+name TEXT NOT NULL
+);
