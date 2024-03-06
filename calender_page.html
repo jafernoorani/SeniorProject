@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard with Calendar and Chart</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<link rel="stylesheet" href="calender_page.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Menu</h2>
+  <ul>
+    <li><i class="fas fa-home"></i>Dashboard</li>
+    <li><i class="fas fa-calendar-alt"></i>Calendar</li>
+    <li><i class="fas fa-chart-line"></i>Analytics</li>
+    <li><i class="fas fa-envelope"></i>Inbox</li>
+    <li><i class="fas fa-question-circle"></i>Help</li>
+  </ul>
+</div>
+
+<div class="content">
+  <div class="header">
+    <h1>March 2024</h1>
+    <div>
+      <button>&lt; Prev</button>
+      <button>Next &gt;</button>
+    </div>
+  </div>
+  
+  <div class="calendar-header">
+    <div>Sun</div>
+    <div>Mon</div>
+    <div>Tue</div>
+    <div>Wed</div>
+    <div>Thu</div>
+    <div>Fri</div>
+    <div>Sat</div>
+  </div>
+  
+  <div class="calendar">
+    <div class="day">1</div>
+    <!-- ... all days ... -->
+    <div class="day">31</div>
+  </div>
+  
+  <div id="chart-container">
+    <h2>Chart</h2>
+    <canvas id="myChart" width="400" height="400"></canvas>
+  </div>
+</div>
+
+<script src="chart.js"></script>
+</body>
+</html>
