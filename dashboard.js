@@ -1,50 +1,40 @@
-// Get references to the input fields and the output tbody element
-const morningInput = document.getElementById('morning');
-const afternoonInput = document.getElementById('afternoon');
-const eveningInput = document.getElementById('evening');
-const outputTbody = document.getElementById('output');
-
-// Function to get the current date in YYYY-MM-DD format
-function getCurrentDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
 // Function to handle form submission
-function handleSubmit() {
-    // Get blood sugar levels from input fields
-    const morningLevel = morningInput.value;
-    const afternoonLevel = afternoonInput.value;
-    const eveningLevel = eveningInput.value;
+document.getElementById('submit').addEventListener('click', function() {
+    // Get input values
+    const morningInput = document.getElementById('morning-input').value;
+    const afternoonInput = document.getElementById('afternoon-input').value;
+    const eveningInput = document.getElementById('evening-input').value;
 
-    // Get current date
-    const currentDate = getCurrentDate();
+    // Sample data for the chart (replace with actual data)
+    const data = {
+        labels: ['Morning', 'Afternoon', 'Evening'],
+        datasets: [{
+            label: 'Blood Sugar Levels',
+            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+            borderWidth: 1,
+            data: [morningInput, afternoonInput, eveningInput], // Blood sugar values
+        }]
+    };
 
-    // Create a new table row
-    const newRow = document.createElement('tr');
+    // Configuration for the chart
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    };
 
-    // Add table data for date and blood sugar levels
-    newRow.innerHTML = `
-        <td>${currentDate}</td>
-        <td>${morningLevel}</td>
-        <td>${afternoonLevel}</td>
-        <td>${eveningLevel}</td>
-        <td><button class="edit-btn">Edit</button></td>
-        <td><button class="delete-btn">Delete</button></td>
-    `;
+    // Get the canvas element for the chart
+    const bloodSugarChartCanvas = document.getElementById('bloodSugarChart').getContext('2d');
 
-    // Append the new row to the output table
-    outputTbody.appendChild(newRow);
-
-    // Clear input fields
-    morningInput.value = '';
-    afternoonInput.value = '';
-    eveningInput.value = '';
-}
-
-// Add event listener to the submit button
-const submitBtn = document.getElementById('submit');
-submitBtn.addEventListener('click', handleSubmit);
+    // Create and render the chart
+    new Chart(bloodSugarChartCanvas, config);
+});
