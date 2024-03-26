@@ -6,7 +6,7 @@
 <title>Dashboard with Calendar and Chart</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-<link rel="stylesheet" href="calender_page.css">
+<link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
 
@@ -14,42 +14,31 @@
   <h2>Menu</h2>
   <ul>
     <li><a href="dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
-    <li><a href="#"><i class="fas fa-calendar-alt"></i>Calendar</a></li>
+    <li><a href="calender_page.html"><i class="fas fa-calendar-alt"></i>Calendar</a></li>
     <li><a href="#"><i class="fas fa-chart-line"></i>Analytics</a></li>
     <li><a href="#"><i class="fas fa-envelope"></i>Inbox</a></li>
     <li><a href="#"><i class="fas fa-question-circle"></i>Help</a></li>
   </ul>
 </div>
 
+<!-- Content -->
 <div class="content">
-  <div class="header">
-    <h1>March 2024</h1>
-    <div>
-      <button>&lt; Prev</button>
-      <button>Next &gt;</button>
+    <div class="header">
+      <h1>Blood Sugar Chart</h1>
     </div>
-  </div>
-  
-  <div class="calendar-header">
-    <div>Sun</div>
-    <div>Mon</div>
-    <div>Tue</div>
-    <div>Wed</div>
-    <div>Thu</div>
-    <div>Fri</div>
-    <div>Sat</div>
-  </div>
-  
-  <div class="calendar">
-    <div class="day">1</div>
-    <!-- ... all days ... -->
-    <div class="day">31</div>
-  </div>
-  
-  <div id="chart-container">
-    <h2>Chart</h2>
-    <canvas id="myChart" width="400" height="400"></canvas>
-  </div>
+    
+    <div class="chart-container">
+      <canvas id="bloodSugarChart" width="800" height="400"></canvas>
+    </div>
+
+    <div class="buttons">
+      <button id="1dayBtn">1 Day</button>
+      <button id="1weekBtn">1 Week</button>
+      <button id="1monthBtn">1 Month</button>
+      <button id="3monthsBtn">3 Months</button>
+      <button id="1yearBtn">1 Year</button>
+      <button id="yearToDateBtn">Year to Date</button>
+    </div>
 </div>
 
 <script>
@@ -60,7 +49,7 @@ const dashboardMenuItem = document.querySelector('.sidebar ul li:first-child');
 dashboardMenuItem.classList.add('active');
 </script>
 
-<script src="calendar_page.js"></script>
+<script src="dashboard.js"></script>
 
 </body>
 </html>

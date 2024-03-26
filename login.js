@@ -1,23 +1,23 @@
-// creating connection to database
-var mysql = require('mysql');
+// // creating connection to database
+// var mysql = require('mysql');
 
-var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "Seniorproject1!",
-    database: "logins"
-});
+// var con = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "Seniorproject1!",
+//     database: "logins"
+// });
 
-con.connect(function(err) {
-    if(err) throw err;
-    console.log("Connected!");
-    // var sql = "CREATE TABLE userLogins (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL)";
-    var sql = "INSERT INTO userLogins (username, password) VALUES('test2', 'pwd1'),('test3', 'pwd2'),('test4', 'pwd3')";
-    con.query(sql, function(err,result) {
-        if(err) throw err;
-        console.log("Number of records inserted: " + result.affectedRows);
-    });
-});
+// con.connect(function(err) {
+//     if(err) throw err;
+//     console.log("Connected!");
+//     // var sql = "CREATE TABLE userLogins (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL)";
+//     var sql = "INSERT INTO userLogins (username, password) VALUES('test2', 'pwd1'),('test3', 'pwd2'),('test4', 'pwd3')";
+//     con.query(sql, function(err,result) {
+//         if(err) throw err;
+//         console.log("Number of records inserted: " + result.affectedRows);
+//     });
+// });
 
 
 // login.js

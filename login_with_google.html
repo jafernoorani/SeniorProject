@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="Sample_test/css/login.css" rel="stylesheet" />
-    <!-- Add Google One Tap Sign-In API -->
-    <script src="https://accounts.google.com/gsi/client?client_id=220537174820-od9217r3e43dh1u9u9u4snhhq08mlrt4.apps.googleusercontent.com" async defer></script>
     <style>
         /* Customize Google One Tap Sign-In button */
         .g_id_signin {
             margin-top: 20px;
         }
     </style>
+    <!-- Add Google One Tap Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <div class="login-container">
-        <!-- <div class="login-logo"> -->
-            <!-- Replace 'logo.png' with the path to your actual logo image -->
-            <!-- <img src="logo.png" alt="Logo"> -->
-        <!-- </div> -->
         <div class="login-form">
             <h2>SIGN IN TO Sugar Daddy</h2>
             <form id="loginForm">
@@ -28,11 +24,10 @@
                 </div>
                 <div class="input-group">
                     <input type="password" id="password" name="password" required placeholder="Password">
-
                     <div class="show-password">
                         <input type="checkbox" id="show-password" onclick="togglePassword()">
                         <label for="show-password">Show password</label>
-                    </div>                    
+                    </div>
                 </div>
                 <div class="form-footer">
                     <a href="#" class="forgot-password">Forgot password?</a>
@@ -42,28 +37,7 @@
                     <button type="button" onclick="location.href='createAccount.html'">SIGN UP</button>
                 </div>
             </form>
-    
-            <div id="g_id_onload"
-                data-client_id="220537174820-od9217r3e43dh1u9u9u4snhhq08mlrt4.apps.googleusercontent.com"
-                data-theme="outline"
-                data-shape="rectangular"
-                data-size="large"
-                data-logo_alignment="left">
-            </div>
-
-            <div class="g_id_signin" data-type="standard" data-onsuccess="onSignIn">
-                <script>
-                    function onSignIn(googleUser) {
-                        var profile = googleUser.getBasicProfile();
-                        console.log('Google User ID: ' + profile.getId());
-                        console.log('Name: ' + profile.getName());
-                        console.log('Email: ' + profile.getEmail());
-                    }
-
-                </script>
-            </div>
-     
-        
+            <div id="g_id_onload"></div>
             <div class="support">
                 <p>For support email us at: gofuckyourself@gmail.com</p>
             </div>
@@ -77,5 +51,49 @@
         </div>
     </div>
     <script src="login.js"></script>
+    <script>
+        function onSignIn(googleUser) {
+            try {
+                var profile = googleUser.getBasicProfile();
+                var googleId = profile.getId();
+                var userName = profile.getName();
+                var userEmail = profile.getEmail();
+
+                console.log('Google User ID: ' + googleId);
+                console.log('Name: ' + userName);
+                console.log('Email: ' + userEmail);
+
+                // Add your logic for a successful sign-in here.
+            } catch (error) {
+                console.error('Error retrieving user information:', error);
+            }
+        }
+
+
+
+        // function onSignIn(googleUser) {
+        //     var profile = googleUser.getBasicProfile();
+        //     console.log('Google User ID: ' + profile.getId());
+        //     console.log('Name: ' + profile.getName());
+        //     console.log('Email: ' + profile.getEmail());
+        //     // Add your logic for a successful sign-in here.
+
+        //     // Redirect to a new page after sign-in
+        // }
+
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: "220537174820-od9217r3e43dh1u9u9u4snhhq08mlrt4.apps.googleusercontent.com",
+                callback: onSignIn
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("g_id_onload"), {
+                    theme: "outline",
+                    size: "large"
+                }
+            );
+            google.accounts.id.prompt(); // Display the One Tap sign-in dialog
+        }
+    </script>
 </body>
 </html>
