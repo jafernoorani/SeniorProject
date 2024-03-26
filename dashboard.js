@@ -1,65 +1,50 @@
-// Sample blood sugar data (replace with your actual data)
-const bloodSugarData = {
-    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-    datasets: [{
-      label: 'Blood Sugar Levels',
-      backgroundColor: 'rgb(255, 99, 132)',
-      borderColor: 'rgb(255, 99, 132)',
-      data: [120, 130, 110, 140, 135, 125, 130], // Sample blood sugar values
-    }]
-};
+// Get references to the input fields and the output tbody element
+const morningInput = document.getElementById('morning');
+const afternoonInput = document.getElementById('afternoon');
+const eveningInput = document.getElementById('evening');
+const outputTbody = document.getElementById('output');
 
-// Configuration for the Chart.js chart
-const config = {
-    type: 'line',
-    data: bloodSugarData,
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Blood Sugar Level'
-                }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Time'
-                }
-            }
-        }
-    }
-};
-
-// Initialize the Chart.js chart
-const bloodSugarChart = new Chart(
-    document.getElementById('bloodSugarChart'),
-    config
-);
-
-// Function to update chart based on selected time frame
-function updateChart(timeFrame) {
-    // Implement data filtering based on the selected time frame
-    // For simplicity, this example uses static data
-    let newData;
-    switch (timeFrame) {
-        case '1day':
-            newData = bloodSugarData;
-            break;
-        // Add cases for other time frames
-        default:
-            newData = bloodSugarData;
-    }
-
-    // Update chart data and redraw
-    bloodSugarChart.data = newData;
-    bloodSugarChart.update();
+// Function to get the current date in YYYY-MM-DD format
+function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
-// Event listeners for interactive controls
-document.getElementById('1dayBtn').addEventListener('click', () => updateChart('1day'));
-document.getElementById('1weekBtn').addEventListener('click', () => updateChart('1week'));
-document.getElementById('3monthsBtn').addEventListener('click', () => updateChart('3months'));
-document.getElementById('1yearBtn').addEventListener('click', () => updateChart('1year'));
-document.getElementById('yearToDateBtn').addEventListener('click', () => updateChart('yeartodate'));
+// Function to handle form submission
+function handleSubmit() {
+    // Get blood sugar levels from input fields
+    const morningLevel = morningInput.value;
+    const afternoonLevel = afternoonInput.value;
+    const eveningLevel = eveningInput.value;
+
+    // Get current date
+    const currentDate = getCurrentDate();
+
+    // Create a new table row
+    const newRow = document.createElement('tr');
+
+    // Add table data for date and blood sugar levels
+    newRow.innerHTML = `
+        <td>${currentDate}</td>
+        <td>${morningLevel}</td>
+        <td>${afternoonLevel}</td>
+        <td>${eveningLevel}</td>
+        <td><button class="edit-btn">Edit</button></td>
+        <td><button class="delete-btn">Delete</button></td>
+    `;
+
+    // Append the new row to the output table
+    outputTbody.appendChild(newRow);
+
+    // Clear input fields
+    morningInput.value = '';
+    afternoonInput.value = '';
+    eveningInput.value = '';
+}
+
+// Add event listener to the submit button
+const submitBtn = document.getElementById('submit');
+submitBtn.addEventListener('click', handleSubmit);
