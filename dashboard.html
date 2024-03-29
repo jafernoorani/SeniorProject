@@ -1,52 +1,322 @@
-<!DOCTYPE html> 
-<html lang="en"> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            background-color: #fff;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .button {
+            display: inline-block;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #f8f9fa;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            padding: 10px 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+        }
 
-<head> 
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Dashboard</title> 
+        .form-section {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+        }
 
-    <!-- Bootstrap CSS CDN -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"> 
+        .form-section h2 {
+            margin-top: 0;
+        }
 
+        .form-row {
+            margin-bottom: 10px;
+        }
+
+        .chart-section {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+        }
+        .chart-container, .summary-section {
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-control, .btn {
+            margin-top: 10px;
+        }
+        canvas {
+            width: 100% !important;
+            max-width: 600px;
+            height: 400px !important;
+        }
+        /* Sidebar styles */
+        .sidebar {
+            background-color: #333;
+            color: white;
+            height: 100vh; /* Full-height viewport */
+            width: 250px; /* Set sidebar width */
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-x: hidden; /* Disable horizontal scroll */
+            padding-top: 20px;
+        }
+
+        /* Sidebar links */
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+        }
+
+        /* Links on hover */
+        .sidebar a:hover {
+            color: #f1f1f1;
+            background-color: #575757;
+        }
+
+        /* Active/current link */
+        .sidebar a.active {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        /* Content styles */
+        .content {
+            margin-left: 250px; /* Same as sidebar width */
+            padding: 1px 16px;
+            height: 1000px; /* Sample content height */
+        }
+        .btn-custom {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+        
+        .btn-custom:hover {
+            background-color: #45a049;
+        }
+
+        .form-input-group {
+            background: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .input-group-text {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: 0;
+        }
+
+        .form-control {
+            border-left: 0;
+        }
+
+        /* Adjust the style of hr to match the sidebar style */
+        hr {
+            border-color: #4CAF50; /* Green to match the active nav link */
+        }
+
+        /* Customizing table headers */
+        thead th {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+        .form-input-group {
+            background: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+        }
+        .input-group-text {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: 0;
+        }
+        .input-group .form-control {
+            border-left: 0;
+        }
+        .btn-custom {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: none;
+            margin-top: 10px;
+        }
+        .btn-custom:hover {
+            background-color: #45a049;
+        }
+        /* Timeframe buttons */
+        .timeframe-btns .btn {
+            margin-right: 10px; /* Add spacing between buttons */
+        }
+        /* Chart and Summary Section */
+        .chart-container, .summary-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        /* Adjusting sidebar link active state */
+        .sidebar .nav-pills .nav-link.active, .sidebar .nav-pills .nav-link:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Mobile responsiveness: Hide sidebar on smaller screens */
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-<body> 
-    <div class="container mt-5"> 
-        <h1 class="mb-4">Blood Sugar Levels</h1> 
-
-        <div class="form-row mb-3"> 
-            <div class="col-md-4"> 
-                <label for="morning-input">Morning (mg/dL)</label> 
-                <input id="morning-input" type="number" class="form-control"> 
-            </div> 
-            <div class="col-md-4"> 
-                <label for="afternoon-input">Afternoon (mg/dL)</label> 
-                <input id="afternoon-input" type="number" class="form-control"> 
-            </div> 
-            <div class="col-md-4"> 
-                <label for="evening-input">Evening (mg/dL)</label> 
-                <input id="evening-input" type="number" class="form-control"> 
-            </div> 
-        </div> 
-
-        <button id="submit" class="btn btn-primary">Submit</button> 
-
-        <div class="row mt-5"> 
-            <div class="col">
-                <canvas id="bloodSugarChart" width="400" height="200"></canvas>
+<<body>
+    <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-dark">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <span class="fs-4">Diabetes Dashboard</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" aria-current="page">Dashboard</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link text-white">Reports</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link text-white">Analytics</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link text-white">Export</a>
+            </li>
+        </ul>
+        <hr>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h1 class="my-4">Diabetes Management Dashboard</h1>
+            <div class="form-input-group">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Morning Level</span>
+                    </div>
+                    <input type="number" id="morning-level" class="form-control" placeholder="mg/dL">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Afternoon Level</span>
+                    </div>
+                    <input type="number" id="afternoon-level" class="form-control" placeholder="mg/dL">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Evening Level</span>
+                    </div>
+                    <input type="number" id="evening-level" class="form-control" placeholder="mg/dL">
+                </div>
+                <button id="submit-levels" class="btn btn-custom">Submit</button>
+            </div>
+            <div class="timeframe-btns mb-4">
+                <button onclick="setChartTimeframe('week')" class="btn btn-outline-secondary">Weekly View</button>
+                <button onclick="setChartTimeframe('month')" class="btn btn-outline-secondary">Monthly View</button>
+                <button onclick="setChartTimeframe('quarter')" class="btn btn-outline-secondary">3-Month View</button>
+                <button onclick="setChartTimeframe('sixMonths')" class="btn btn-outline-secondary">6-Month View</button>
+                <button onclick="setChartTimeframe('year')" class="btn btn-outline-secondary">Yearly View</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="bloodSugarChart"></canvas>
+            </div>
+            <div class="summary-section">
+                <h2>Summary</h2>
+                <table id="data-table" class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Morning (mg/dL)</th>
+                            <th>Afternoon (mg/dL)</th>
+                            <th>Evening (mg/dL)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be added here -->
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div> 
-
-    <!-- Bootstrap JS and jQuery CDN (required for Bootstrap components) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shCk+5KVcYM5n9KvoUdjKwGxhjXoRS0wwE2A5" crossorigin="anonymous"></script>
-
-    <!-- Custom JavaScript -->
+    </div>
     <script src="dashboard.js"></script>
-</body> 
-
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
 </html>
