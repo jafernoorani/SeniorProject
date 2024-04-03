@@ -1,51 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link href="Sample_test/css/login.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 100px;
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-logo">
-            <!-- Replace 'logo.png' with the path to your actual logo image -->
-            <img src="logo.png" alt="Logo">
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          Login
         </div>
-        <div class="login-form">
-            <h2>SIGN IN TO Sugar Daddy</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <input type="text" id="email" name="email" required placeholder="Email address or username">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="password" name="password" required placeholder="Password">
-                    <div class="show-password">
-                        <input type="checkbox" id="show-password" onclick="togglePassword()"> <!-- Removed checked attribute -->
-                        <label for="show-password">Show password</label>
-                    </div>                    
-                </div>
-                <div class="form-footer">
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                    <button type="submit">SIGN IN</button>
-                </div>
-                <div class="sign-up">
-                    <button type="button" onclick="location.href='createAccount.html'">SIGN UP</button>
-                </div>
-            </form>
-            <div class="support">
-                <p>For support email us at: ???</p>
+        <div class="card-body">
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="language-privacy">
-                <select>
-                    <option>English (United States)</option>
-                    <!-- Add other languages as needed -->
-                </select>
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
             </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="button" class="btn btn-danger float-right" onclick="window.location.href='register.html'">Register</button>
+          </form>
+          <hr>
+          <div class="text-center">
+            <!-- Google Sign-In button -->
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+          </div>
         </div>
+      </div>
     </div>
-    <script src="login.js"></script>
+  </div>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Google Sign-In API -->
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<script>
+  // Google Sign-In callback function
+  function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+    // Here you can handle the user authentication, such as sending the user data to your backend for verification.
+    // Example:
+    // var idToken = googleUser.getAuthResponse().id_token;
+    // $.post('/your-server-endpoint', { idtoken: idToken })
+    //   .done(function(data) {
+    //     // Handle successful authentication
+    //   })
+    //   .fail(function() {
+    //     // Handle authentication failure
+    //   });
+  }
+</script>
+
 </body>
 </html>

@@ -4,319 +4,227 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Dashboard</title>
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
-            margin: 0;
-            padding: 0;
-        }
         .sidebar {
-            background-color: #fff;
-            padding: 10px;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
             width: 250px;
-        }
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            background-color: #fff;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .button {
-            display: inline-block;
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 4px;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #f8f9fa;
-        }
-        .section-title {
-            font-size: 20px;
-            color: #333;
-            padding: 10px 20px;
-            background-color: #fff;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .form-section {
-            background-color: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .form-section h2 {
-            margin-top: 0;
-        }
-
-        .form-row {
-            margin-bottom: 10px;
-        }
-
-        .chart-section {
-            background-color: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-        }
-        .chart-container, .summary-section {
-            margin-top: 20px;
-            background-color: #fff;
-            border-radius: 4px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .form-control, .btn {
-            margin-top: 10px;
-        }
-        canvas {
-            width: 100% !important;
-            max-width: 600px;
-            height: 400px !important;
-        }
-        /* Sidebar styles */
-        .sidebar {
-            background-color: #333;
-            color: white;
-            height: 100vh; /* Full-height viewport */
-            width: 250px; /* Set sidebar width */
+            background-color: #343a40;
+            color: #fff;
+            transition: all 0.3s;
+            overflow-y: auto;
             position: fixed;
-            top: 0;
-            left: 0;
-            overflow-x: hidden; /* Disable horizontal scroll */
-            padding-top: 20px;
+            height: 100%;
         }
 
-        /* Sidebar links */
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: white;
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #454d55;
+        }
+
+        .sidebar ul.components {
+            padding: 15px 0;
+        }
+
+        .sidebar ul p {
+            padding: 8px;
+            font-size: 1em;
             display: block;
         }
 
-        /* Links on hover */
-        .sidebar a:hover {
-            color: #f1f1f1;
-            background-color: #575757;
+        .sidebar ul li a {
+            padding: 8px;
+            font-size: 1em;
+            display: block;
+            color: #adb5bd;
         }
 
-        /* Active/current link */
-        .sidebar a.active {
-            background-color: #04AA6D;
-            color: white;
+        .sidebar ul li a:hover {
+            color: #fff;
+            background: #495057;
         }
-
-        /* Content styles */
         .content {
-            margin-left: 250px; /* Same as sidebar width */
-            padding: 1px 16px;
-            height: 1000px; /* Sample content height */
-        }
-        .btn-custom {
-            background-color: #4CAF50; /* Green */
-            color: white;
-        }
-        
-        .btn-custom:hover {
-            background-color: #45a049;
-        }
-
-        .form-input-group {
-            background: #fff;
-            border-radius: 5px;
             padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .input-group-text {
-            background-color: #4CAF50; /* Green */
-            color: white;
-            border: 0;
-        }
-
-        .form-control {
-            border-left: 0;
-        }
-
-        /* Adjust the style of hr to match the sidebar style */
-        hr {
-            border-color: #4CAF50; /* Green to match the active nav link */
-        }
-
-        /* Customizing table headers */
-        thead th {
-            background-color: #4CAF50; /* Green */
-            color: white;
-        }
-        .form-input-group {
-            background: #fff;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-        }
-        .input-group-text {
-            background-color: #4CAF50; /* Green */
-            color: white;
-            border: 0;
-        }
-        .input-group .form-control {
-            border-left: 0;
-        }
-        .btn-custom {
-            background-color: #4CAF50; /* Green */
-            color: white;
-            border: none;
-            margin-top: 10px;
-        }
-        .btn-custom:hover {
-            background-color: #45a049;
-        }
-        /* Timeframe buttons */
-        .timeframe-btns .btn {
-            margin-right: 10px; /* Add spacing between buttons */
-        }
-        /* Chart and Summary Section */
-        .chart-container, .summary-section {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        /* Adjusting sidebar link active state */
-        .sidebar .nav-pills .nav-link.active, .sidebar .nav-pills .nav-link:hover {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        /* Mobile responsiveness: Hide sidebar on smaller screens */
-        @media screen and (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-            .content {
-                margin-left: 0;
-            }
         }
     </style>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 sidebar">
+                <div class="sidebar-header">
+                    <h3>Diabetes Dashboard</h3>
+                </div>
+                <ul class="list-unstyled components">
+                    <li class="active">
+                        <a href="#"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-chart-pie"></i> Analytics</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-download"></i> Export</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Page content -->
+            <div id="content" class="col-md-9 ml-sm-auto col-lg-9 px-4">
+                <div class="container-fluid">
+                    <!-- Your dashboard content goes here -->
+                    <h1 class="mt-4">Diabetes Management Dashboard</h1>
+                    <!-- Form input group -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Blood Sugar Levels
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="morning-addon">Morning Level</span>
+                                        <input type="number" id="morning-level" class="form-control" placeholder="mg/dL">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="afternoon-addon">Afternoon Level</span>
+                                        <input type="number" id="afternoon-level" class="form-control" placeholder="mg/dL">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="evening-addon">Evening Level</span>
+                                        <input type="number" id="evening-level" class="form-control" placeholder="mg/dL">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button id="submit-levels" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </div>
 
-<<body>
-    <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-dark">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <span class="fs-4">Diabetes Dashboard</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="#" class="nav-link active" aria-current="page">Dashboard</a>
-            </li>
-            <li>
-                <a href="#" class="nav-link text-white">Reports</a>
-            </li>
-            <li>
-                <a href="#" class="nav-link text-white">Analytics</a>
-            </li>
-            <li>
-                <a href="#" class="nav-link text-white">Export</a>
-            </li>
-        </ul>
-        <hr>
-    </div>
-    <div class="content">
-        <div class="container">
-            <h1 class="my-4">Diabetes Management Dashboard</h1>
-            <div class="form-input-group">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Morning Level</span>
+                    <!-- Timeframe buttons -->
+                    <div class="mb-4">
+                        <button onclick="setChartTimeframe('week')" class="btn btn-outline-secondary">Weekly View</button>
+                        <button onclick="setChartTimeframe('month')" class="btn btn-outline-secondary">Monthly View</button>
+                        <button onclick="setChartTimeframe('quarter')" class="btn btn-outline-secondary">3-Month View</button>
+                        <button onclick="setChartTimeframe('sixMonths')" class="btn btn-outline-secondary">6-Month View</button>
+                        <button onclick="setChartTimeframe('year')" class="btn btn-outline-secondary">Yearly View</button>
                     </div>
-                    <input type="number" id="morning-level" class="form-control" placeholder="mg/dL">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Afternoon Level</span>
+
+                    <!-- Chart -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Blood Sugar Chart
+                        </div>
+                        <div class="card-body">
+                            <canvas id="bloodSugarChart" width="100%" height="40"></canvas>
+                        </div>
                     </div>
-                    <input type="number" id="afternoon-level" class="form-control" placeholder="mg/dL">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Evening Level</span>
+
+                    <!-- Summary -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Summary
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="data-table" class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Morning (mg/dL)</th>
+                                            <th>Afternoon (mg/dL)</th>
+                                            <th>Evening (mg/dL)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data rows will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <input type="number" id="evening-level" class="form-control" placeholder="mg/dL">
                 </div>
-                <button id="submit-levels" class="btn btn-custom">Submit</button>
-            </div>
-            <div class="timeframe-btns mb-4">
-                <button onclick="setChartTimeframe('week')" class="btn btn-outline-secondary">Weekly View</button>
-                <button onclick="setChartTimeframe('month')" class="btn btn-outline-secondary">Monthly View</button>
-                <button onclick="setChartTimeframe('quarter')" class="btn btn-outline-secondary">3-Month View</button>
-                <button onclick="setChartTimeframe('sixMonths')" class="btn btn-outline-secondary">6-Month View</button>
-                <button onclick="setChartTimeframe('year')" class="btn btn-outline-secondary">Yearly View</button>
-            </div>
-            <div class="chart-container">
-                <canvas id="bloodSugarChart"></canvas>
-            </div>
-            <div class="summary-section">
-                <h2>Summary</h2>
-                <table id="data-table" class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Morning (mg/dL)</th>
-                            <th>Afternoon (mg/dL)</th>
-                            <th>Evening (mg/dL)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data rows will be added here -->
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
-    <script src="dashboard.js"></script>
+
     <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+<!-- Custom JS -->
+<script>
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+
+        $('#submit-levels').on('click', function () {
+            var morningLevel = parseInt($('#morning-level').val()) || 0;
+            var afternoonLevel = parseInt($('#afternoon-level').val()) || 0;
+            var eveningLevel = parseInt($('#evening-level').val()) || 0;
+            var date = new Date().toLocaleDateString();
+            var userData = [date, morningLevel, afternoonLevel, eveningLevel];
+            console.log("User Data:", userData); // Log user data to console
+            updateChart(userData);
+            updateSummary(userData);
+        });
+    });
+
+    // Sample data for the chart
+    var chartData = {
+        labels: ['Morning', 'Afternoon', 'Evening'],
+        datasets: [{
+            label: 'Blood Sugar Levels',
+            data: [0, 0, 0],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var chartOptions = {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    };
+
+    var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+    var bloodSugarChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: chartOptions
+    });
+
+    function updateChart(userData) {
+        bloodSugarChart.data.datasets[0].data = userData.slice(1);
+        bloodSugarChart.update();
+    }
+
+    function updateSummary(userData) {
+        var newRow = '<tr><td>' + userData[0] + '</td><td>' + userData[1] + '</td><td>' + userData[2] + '</td><td>' + userData[3] + '</td></tr>';
+        $('#data-table tbody').prepend(newRow);
+    }
+</script>
+
 </body>
 </html>
