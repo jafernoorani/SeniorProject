@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Dashboard</title>
+    <title>Diabetes Management Dashboard</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -11,44 +11,65 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
         .sidebar {
-            width: 250px;
             background-color: #343a40;
             color: #fff;
-            transition: all 0.3s;
-            overflow-y: auto;
             position: fixed;
+            width: 200px; /* Adjusted width */
             height: 100%;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1;
         }
-
         .sidebar-header {
-            padding: 15px;
+            padding: 20px;
             border-bottom: 1px solid #454d55;
         }
-
         .sidebar ul.components {
-            padding: 15px 0;
+            padding: 20px 0;
         }
-
-        .sidebar ul p {
-            padding: 8px;
-            font-size: 1em;
-            display: block;
-        }
-
         .sidebar ul li a {
-            padding: 8px;
-            font-size: 1em;
+            padding: 10px 20px;
+            font-size: 1.2em;
             display: block;
             color: #adb5bd;
         }
-
         .sidebar ul li a:hover {
-            color: #fff;
             background: #495057;
         }
         .content {
+            margin-left: 200px; /* Adjusted margin */
             padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 10px 10px 0 0;
+        }
+        .card-title {
+            margin-bottom: 0;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .table {
+            background-color: #fff;
+        }
+        .table th, .table td {
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -56,7 +77,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 sidebar">
+            <nav id="sidebar" class="col-md-2 sidebar"> <!-- Adjusted width -->
                 <div class="sidebar-header">
                     <h3>Diabetes Dashboard</h3>
                 </div>
@@ -76,38 +97,37 @@
                 </ul>
             </nav>
             <!-- Page content -->
-            <div id="content" class="col-md-9 ml-sm-auto col-lg-9 px-4">
+            <div id="content" class="col-md-10 ml-sm-auto col-lg-10 px-4"> <!-- Adjusted margin -->
                 <div class="container-fluid">
                     <!-- Your dashboard content goes here -->
                     <h1 class="mt-4">Diabetes Management Dashboard</h1>
                     <!-- Form input group -->
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            Blood Sugar Levels
+                            <h5 class="card-title">Blood Sugar Levels</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text" id="morning-addon">Morning Level</span>
+                                    <div class="form-group">
+                                        <label for="morning-level">Morning Level</label>
                                         <input type="number" id="morning-level" class="form-control" placeholder="mg/dL">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text" id="afternoon-addon">Afternoon Level</span>
+                                    <div class="form-group">
+                                        <label for="afternoon-level">Afternoon Level</label>
                                         <input type="number" id="afternoon-level" class="form-control" placeholder="mg/dL">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text" id="evening-addon">Evening Level</span>
+                                    <div class="form-group">
+                                        <label for="evening-level">Evening Level</label>
                                         <input type="number" id="evening-level" class="form-control" placeholder="mg/dL">
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-end">
+                            <div class="text-right">
                                 <button id="submit-levels" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
@@ -125,8 +145,7 @@
                     <!-- Chart -->
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-chart-area me-1"></i>
-                            Blood Sugar Chart
+                            <h5 class="card-title">Blood Sugar Chart</h5>
                         </div>
                         <div class="card-body">
                             <canvas id="bloodSugarChart" width="100%" height="40"></canvas>
@@ -136,12 +155,11 @@
                     <!-- Summary -->
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            Summary
+                            <h5 class="card-title">Summary</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="data-table" class="table table-bordered" width="100%" cellspacing="0">
+                                <table id="data-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
@@ -167,64 +185,63 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Custom JS -->
-<!-- Custom JS -->
-<script>
-    $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            $('#submit-levels').on('click', function () {
+                var morningLevel = parseInt($('#morning-level').val()) || 0;
+                var afternoonLevel = parseInt($('#afternoon-level').val()) || 0;
+                var eveningLevel = parseInt($('#evening-level').val()) || 0;
+                var date = new Date().toLocaleDateString();
+                var userData = [date, morningLevel, afternoonLevel, eveningLevel];
+                console.log("User Data:", userData); // Log user data to console
+                updateChart(userData);
+                updateSummary(userData);
+            });
         });
 
-        $('#submit-levels').on('click', function () {
-            var morningLevel = parseInt($('#morning-level').val()) || 0;
-            var afternoonLevel = parseInt($('#afternoon-level').val()) || 0;
-            var eveningLevel = parseInt($('#evening-level').val()) || 0;
-            var date = new Date().toLocaleDateString();
-            var userData = [date, morningLevel, afternoonLevel, eveningLevel];
-            console.log("User Data:", userData); // Log user data to console
-            updateChart(userData);
-            updateSummary(userData);
-        });
-    });
-
-    // Sample data for the chart
-    var chartData = {
-        labels: ['Morning', 'Afternoon', 'Evening'],
-        datasets: [{
-            label: 'Blood Sugar Levels',
-            data: [0, 0, 0],
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-        }]
-    };
-
-    var chartOptions = {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
+        // Sample data for the chart
+        var chartData = {
+            labels: ['Morning', 'Afternoon', 'Evening'],
+            datasets: [{
+                label: 'Blood Sugar Levels',
+                data: [0, 0, 0],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
             }]
+        };
+
+        var chartOptions = {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        };
+
+        var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+        var bloodSugarChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: chartOptions
+        });
+
+        function updateChart(userData) {
+            bloodSugarChart.data.datasets[0].data = userData.slice(1);
+            bloodSugarChart.update();
         }
-    };
 
-    var ctx = document.getElementById('bloodSugarChart').getContext('2d');
-    var bloodSugarChart = new Chart(ctx, {
-        type: 'line',
-        data: chartData,
-        options: chartOptions
-    });
-
-    function updateChart(userData) {
-        bloodSugarChart.data.datasets[0].data = userData.slice(1);
-        bloodSugarChart.update();
-    }
-
-    function updateSummary(userData) {
-        var newRow = '<tr><td>' + userData[0] + '</td><td>' + userData[1] + '</td><td>' + userData[2] + '</td><td>' + userData[3] + '</td></tr>';
-        $('#data-table tbody').prepend(newRow);
-    }
-</script>
+        function updateSummary(userData) {
+            var newRow = '<tr><td>' + userData[0] + '</td><td>' + userData[1] + '</td><td>' + userData[2] + '</td><td>' + userData[3] + '</td></tr>';
+            $('#data-table tbody').prepend(newRow);
+        }
+    </script>
 
 </body>
 </html>
