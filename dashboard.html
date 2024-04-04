@@ -10,67 +10,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .sidebar {
-            background-color: #343a40;
-            color: #fff;
-            position: fixed;
-            width: 200px; /* Adjusted width */
-            height: 100%;
-            overflow-y: auto;
-            transition: all 0.3s;
-            z-index: 1;
-        }
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #454d55;
-        }
-        .sidebar ul.components {
-            padding: 20px 0;
-        }
-        .sidebar ul li a {
-            padding: 10px 20px;
-            font-size: 1.2em;
-            display: block;
-            color: #adb5bd;
-        }
-        .sidebar ul li a:hover {
-            background: #495057;
-        }
-        .content {
-            margin-left: 200px; /* Adjusted margin */
-            padding: 20px;
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #fff;
-            border-bottom: 1px solid #dee2e6;
-            border-radius: 10px 10px 0 0;
-        }
-        .card-title {
-            margin-bottom: 0;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        .table {
-            background-color: #fff;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
+        /* Add your custom styles here */
     </style>
 </head>
 <body>
@@ -78,26 +23,11 @@
         <div class="row">
             <!-- Sidebar -->
             <nav id="sidebar" class="col-md-2 sidebar"> <!-- Adjusted width -->
-                <div class="sidebar-header">
-                    <h3>Diabetes Dashboard</h3>
-                </div>
-                <ul class="list-unstyled components">
-                    <li class="active">
-                        <a href="#"><i class="fas fa-chart-line"></i> Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-chart-pie"></i> Analytics</a>
-                    </li>
-                    <li>
-                        <a href="export.html"><i class="fas fa-download"></i> Export</a>
-                    </li>
-                </ul>
+                <!-- Sidebar content -->
             </nav>
             <!-- Page content -->
             <div id="content" class="col-md-10 ml-sm-auto col-lg-10 px-4"> <!-- Adjusted margin -->
+                <!-- Page content -->
                 <div class="container-fluid">
                     <!-- Your dashboard content goes here -->
                     <h1 class="mt-4">Diabetes Management Dashboard</h1>
@@ -135,11 +65,7 @@
 
                     <!-- Timeframe buttons -->
                     <div class="mb-4">
-                        <button onclick="setChartTimeframe('week')" class="btn btn-outline-secondary">Weekly View</button>
-                        <button onclick="setChartTimeframe('month')" class="btn btn-outline-secondary">Monthly View</button>
-                        <button onclick="setChartTimeframe('quarter')" class="btn btn-outline-secondary">3-Month View</button>
-                        <button onclick="setChartTimeframe('sixMonths')" class="btn btn-outline-secondary">6-Month View</button>
-                        <button onclick="setChartTimeframe('year')" class="btn btn-outline-secondary">Yearly View</button>
+                        <!-- Timeframe buttons content -->
                     </div>
 
                     <!-- Chart -->
@@ -179,22 +105,22 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">Export Options</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="exportType">Select Export Format:</label>
-                            <select id="exportFormat" class="form-control">
-                                <option value="txt">TXT</option>
-                                <option value="csv">CSV</option>
-                                <option value="json">JSON</option>
-                                <option value="pdf">PDF</option>
-                            </select>                                    
+                    
+                    <!-- Export Options -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Export Options</h5>
                         </div>
-                        <button id="exportBtn" class="btn btn-primary">Export</button>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="exportFormat">Select Export Format:</label>
+                                <select id="exportFormat" class="form-control">
+                                    <option value="pdf">PDF</option>
+                                    <option value="png">PNG</option>
+                                </select>                                    
+                            </div>
+                            <button id="exportBtn" class="btn btn-primary">Export</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -205,6 +131,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<<<<<<< HEAD
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
 
     <!-- At the end of your body tag -->
@@ -216,5 +143,86 @@
     <script src="dashboard.js"></script>
    
 
+=======
+
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function () {
+            // Sample data for the chart
+            var chartData = {
+                labels: ['Morning', 'Afternoon', 'Evening'],
+                datasets: [{
+                    label: 'Blood Sugar Levels',
+                    data: [100, 120, 80], // Example data, replace with actual data
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    lineTension: 0
+                }]
+            };
+
+            var chartOptions = {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            };
+
+            var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+            var bloodSugarChart = new Chart(ctx, {
+                type: 'line', // Change to 'bar' for bar chart
+                data: chartData,
+                options: chartOptions
+            });
+
+            $('#submit-levels').on('click', function () {
+                // Get input values and update the chart
+                var morningLevel = parseInt($('#morning-level').val()) || 0;
+                var afternoonLevel = parseInt($('#afternoon-level').val()) || 0;
+                var eveningLevel = parseInt($('#evening-level').val()) || 0;
+
+                bloodSugarChart.data.datasets[0].data = [morningLevel, afternoonLevel, eveningLevel];
+                bloodSugarChart.update();
+
+                // Update summary table
+                var date = new Date().toLocaleDateString();
+                var newRow = '<tr><td>' + date + '</td><td>' + morningLevel + '</td><td>' + afternoonLevel + '</td><td>' + eveningLevel + '</td></tr>';
+                $('#data-table tbody').prepend(newRow);
+            });
+
+            $('#exportBtn').on('click', function () {
+                var exportFormat = $('#exportFormat').val();
+
+                if (exportFormat === 'pdf') {
+                    exportToPDF();
+                } else if (exportFormat === 'png') {
+                    exportToPNG();
+                }
+            });
+
+            function exportToPDF() {
+            var chartCanvas = document.getElementById('bloodSugarChart');
+            var chartImage = bloodSugarChart.toBase64Image(); // Get chart as base64 encoded string
+            var pdf = new jsPDF();
+            pdf.addImage(chartImage, 'PNG', 0, 0);
+            pdf.save('chart.pdf');
+        }
+
+
+            function exportToPNG() {
+                html2canvas(document.querySelector("#content")).then(canvas => {
+                    var link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = 'chart.png';
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            }
+        });
+    </script>
+>>>>>>> d67fc8f5d4313f732d88307686dc1ee2902e4ed1
 </body>
 </html>
