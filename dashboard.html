@@ -92,7 +92,7 @@
                         <a href="analytics_window.html"><i class="fas fa-chart-pie"></i> Analytics</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fas fa-download"></i> Export</a>
+                        <a href="export.html"><i class="fas fa-download"></i> Export</a>
                     </li>
                 </ul>
             </nav>
@@ -148,16 +148,20 @@
                             <h5 class="card-title">Blood Sugar Chart</h5>
                         </div>
                         <div class="card-body">
-                            <canvas id="bloodSugarChart" width="100%" height="40"></canvas>
+                            <canvas id="bloodSugarChart" style="width: 100%; height: 40"></canvas>
                         </div>
                     </div>
 
-                    <!-- Summary -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="card-title">Summary</h5>
                         </div>
                         <div class="card-body">
+                            <!-- Date Picker Added Above Summary Table -->
+                            <div class="form-group">
+                                <label for="datePicker">Select Date:</label>
+                                <input type="date" id="datePicker" class="form-control mb-3">
+                            </div>
                             <div class="table-responsive">
                                 <table id="data-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
                                     <thead>
@@ -176,6 +180,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Export Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="exportType">Select Export Format:</label>
+                            <select id="exportFormat" class="form-control">
+                                <option value="txt">TXT</option>
+                                <option value="csv">CSV</option>
+                                <option value="json">JSON</option>
+                                <option value="pdf">PDF</option>
+                            </select>                                    
+                        </div>
+                        <button id="exportBtn" class="btn btn-primary">Export</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -184,64 +205,15 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- At the end of your body tag -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+
     <!-- Custom JS -->
-    <script>
-        $(document).ready(function () {
-            $('#sidebarCollapse').on('click', function () {
-                $('#sidebar').toggleClass('active');
-            });
-
-            $('#submit-levels').on('click', function () {
-                var morningLevel = parseInt($('#morning-level').val()) || 0;
-                var afternoonLevel = parseInt($('#afternoon-level').val()) || 0;
-                var eveningLevel = parseInt($('#evening-level').val()) || 0;
-                var date = new Date().toLocaleDateString();
-                var userData = [date, morningLevel, afternoonLevel, eveningLevel];
-                console.log("User Data:", userData); // Log user data to console
-                updateChart(userData);
-                updateSummary(userData);
-            });
-        });
-
-        // Sample data for the chart
-        var chartData = {
-            labels: ['Morning', 'Afternoon', 'Evening'],
-            datasets: [{
-                label: 'Blood Sugar Levels',
-                data: [0, 0, 0],
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        };
-
-        var chartOptions = {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        };
-
-        var ctx = document.getElementById('bloodSugarChart').getContext('2d');
-        var bloodSugarChart = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: chartOptions
-        });
-
-        function updateChart(userData) {
-            bloodSugarChart.data.datasets[0].data = userData.slice(1);
-            bloodSugarChart.update();
-        }
-
-        function updateSummary(userData) {
-            var newRow = '<tr><td>' + userData[0] + '</td><td>' + userData[1] + '</td><td>' + userData[2] + '</td><td>' + userData[3] + '</td></tr>';
-            $('#data-table tbody').prepend(newRow);
-        }
-    </script>
+    <script src="export.js"></script>
+    <script src="dashboard.js"></script>
+   
 
 </body>
 </html>
