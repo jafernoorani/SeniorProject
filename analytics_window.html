@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Sugar Analytics</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    h1, h2 {
+      color: #343a40;
+    }
+    th {
+      background-color: #007bff;
+      color: #ffffff;
+    }
+    /* Additional styling */
+    .jumbotron {
+      background-color: white;
+      color: black;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .jumbotron h1 {
+      margin-bottom: 0;
+    }
+    .symptoms-section {
+      background-color: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron">
+    <h1>Blood Sugar Analytics</h1>
+    <p class="lead">Dynamic information based on average levels</p>
+  </div>
+
+  <div id="info-container">
+    <!-- Content will be dynamically generated here -->
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  // Simulated data retrieval from AWS RDS
+  // For demonstration purposes, I'll just simulate some data
+  const averageLevel = Math.random() * 100; // Simulating average level
+  const age = Math.floor(Math.random() * 100); // Simulating age
+  const weight = Math.floor(Math.random() * 200); // Simulating weight
+
+  // Function to dynamically generate content based on average levels, age, and weight
+  function generateContent(averageLevel, age, weight) {
+    let content = '';
+
+    // Check the range of the average level and display corresponding information
+    if (averageLevel < 40) {
+      // Low blood sugar
+      content = `
+        <h2>Low Blood Sugar</h2>
+        <p>Low blood sugar, or hypoglycemia, occurs when blood sugar levels drop below normal levels.</p>
+        <div class="symptoms-section">
+          <h3>Symptoms:</h3>
+          <ul>
+            <li>Sweating</li>
+            <li>Trembling</li>
+            <li>Weakness</li>
+            <li>Hunger</li>
+            <li>Confusion</li>
+            <!-- Add more symptoms if needed -->
+          </ul>
+        </div>
+        <p>To improve low blood sugar, it's recommended to consume glucose or simple carbohydrates.</p>
+        <p>More information about low blood sugar...</p>
+      `;
+    } else if (averageLevel < 70) {
+      // Medium level
+      content = `
+        <h2>Medium Level</h2>
+        <p>Medium level information goes here...</p>
+      `;
+    } else {
+      // High level
+      content = `
+        <h2>High Level</h2>
+        <p>High level information goes here...</p>
+      `;
+    }
+
+    // Recommendations based on age and weight
+    content += `
+      <h3>Recommendations based on Age and Weight:</h3>
+      <p>Your age: ${age} years</p>
+      <p>Your weight: ${weight} kg</p>
+      <!-- Add recommendations based on age and weight -->
+    `;
+
+    return content;
+  }
+
+  // Generate content based on average level, age, and weight
+  const infoContainer = document.getElementById('info-container');
+  infoContainer.innerHTML = generateContent(averageLevel, age, weight);
+</script>
+
+</body>
+</html>
