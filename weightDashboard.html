@@ -11,11 +11,37 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
+       body {
             background-color: #f8f9fa;
         }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            position: fixed;
+            width: 200px; /* Adjusted width */
+            height: 100%;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #454d55;
+        }
+        .sidebar ul.components {
+            padding: 20px 0;
+        }
+        .sidebar ul li a {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            display: block;
+            color: #adb5bd;
+        }
+        .sidebar ul li a:hover {
+            background: #495057;
+        }
         .content {
-            margin-left: 200px;
+            margin-left: 200px; /* Adjusted margin */
             padding: 20px;
         }
         .card {
@@ -45,27 +71,11 @@
         .table th, .table td {
             vertical-align: middle;
         }
-        /* Style for the iframe */
-        #sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 240px;
-            height: 100%;
-            border: none;
-        }
-        #content {
-            margin-left: 240px;
-        }
     </style>
 </head>
 <body>
-    <!-- Include sidebar using iframe -->
-    <iframe id="sidebar" src="sidebar.html" frameborder="0"></iframe>
-    
-    <!-- Page content -->
-    <div id="content" class="col-md-10 ml-sm-auto col-lg-10 px-4">
-        <div class="container-fluid">
+    <div class="container-fluid">
+        <div class="content">
             <h1 class="mt-4">Weight Management Dashboard</h1>
             <!-- Form input group -->
             <div class="card mb-4">
