@@ -27,6 +27,7 @@
         .sidebar-header {
             padding: 20px;
             border-bottom: 1px solid #454d55;
+            text-align: center;
         }
         .sidebar ul.components {
             padding: 20px 0;
@@ -76,29 +77,29 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-2 sidebar"> <!-- Adjusted width -->
-                <div class="sidebar-header">
-                    <h3>Diabetes Dashboard</h3>
-                </div>
-                <ul class="list-unstyled components">
-                    <li class="active">
-                        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabeties</a>
-                    </li>
-                    <li>
-                        <a href="weightDashboard.html"><i class="fas fa-file-alt"></i> Weight</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-                    </li>
-                    <li>
-                        <a href="analytics_window.html"><i class="fas fa-chart-pie"></i> Analytics</a>
-                    </li>
-                    <li>
-                        <a href="export.html"><i class="fas fa-download"></i> Export</a>
-                    </li>
-                </ul>
-            </nav>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Diabeties Dashboard</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabetes</a>
+            </li>
+            <li>
+                <a href="weightDashboard.html"><i class="fas fa-chart-line"></i> Weight</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-chart-alt"></i> Analytics</a>
+            </li>
+            <li>
+                <a href="export.html"><i class="fas fa-chart-alt"></i> Export</a>
+            </li>
+        </ul>
+    </nav>
             <!-- Page content -->
             <div id="content" class="col-md-10 ml-sm-auto col-lg-10 px-4"> <!-- Adjusted margin -->
                 <div class="container-fluid">
