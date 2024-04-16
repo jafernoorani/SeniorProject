@@ -77,29 +77,29 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-    <!-- Sidebar -->
-    <nav id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h3>Diabeties Dashboard</h3>
-        </div>
-        <ul class="list-unstyled components">
-            <li class="active">
-                <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabetes</a>
-            </li>
-            <li>
-                <a href="weightDashboard.html"><i class="fas fa-chart-line"></i> Weight</a>
-            </li>
-            <li>
-                <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
-            </li>
-            <li>
-                <a href="#"><i class="fas fa-chart-alt"></i> Analytics</a>
-            </li>
-            <li>
-                <a href="export.html"><i class="fas fa-chart-alt"></i> Export</a>
-            </li>
-        </ul>
-    </nav>
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Diabeties Dashboard</h3>
+                </div>
+                <ul class="list-unstyled components">
+                    <li class="active">
+                        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabetes</a>
+                    </li>
+                    <li>
+                        <a href="weightDashboard.html"><i class="fas fa-chart-line"></i> Weight</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fas fa-chart-alt"></i> Analytics</a>
+                    </li>
+                    <li>
+                        <a href="export.html"><i class="fas fa-chart-alt"></i> Export</a>
+                    </li>
+                </ul>
+            </nav>
             <!-- Page content -->
             <div id="content" class="col-md-10 ml-sm-auto col-lg-10 px-4"> <!-- Adjusted margin -->
                 <div class="container-fluid">
@@ -130,13 +130,18 @@
                                         <input type="number" id="evening-level" class="form-control" placeholder="mg/dL">
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="selected-date">Select Date:</label>
+                                        <input type="date" id="selected-date" class="form-control">
+                                    </div>
+                                </div>
                             </div>
                             <div class="text-right">
                                 <button id="submit-levels" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
                     </div>
-
                     <!-- Timeframe buttons -->
                     <div class="mb-4">
                         <button onclick="setChartTimeframe('week')" class="btn btn-outline-secondary">Weekly View</button>
@@ -183,22 +188,23 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">Export Options</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="exportType">Select Export Format:</label>
-                            <select id="exportFormat" class="form-control">
-                                <option value="txt">TXT</option>
-                                <option value="csv">CSV</option>
-                                <option value="json">JSON</option>
-                                <option value="pdf">PDF</option>
-                            </select>                                    
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Export Options</h5>
                         </div>
-                        <button id="exportBtn" class="btn btn-primary">Export</button>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="exportType">Select Export Format:</label>
+                                <select id="exportFormat" class="form-control">
+                                    <option value="txt">TXT</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="json">JSON</option>
+                                    <option value="pdf">PDF</option>
+                                </select>                                    
+                            </div>
+                            <button id="exportBtn" class="btn btn-primary">Export</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -217,7 +223,51 @@
     <!-- Custom JS -->
     <script src="export.js"></script>
     <script src="dashboard.js"></script>
-   
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select the submit button, date input, and the table body
+            const submitButton = document.getElementById('submit-levels');
+            const dateInput = document.getElementById('selected-date');
+            const tableBody = document.querySelector('#data-table tbody');
+
+            // Add event listener for form submission
+            submitButton.addEventListener('click', function (event) {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+
+                // Get the values entered by the user
+                const morningLevel = document.getElementById('morning-level').value;
+                const afternoonLevel = document.getElementById('afternoon-level').value;
+                const eveningLevel = document.getElementById('evening-level').value;
+                const selectedDate = document.getElementById('selected-date').value;
+
+                // Create a new row for the table
+                const newRow = document.createElement('tr');
+                // Add cells to the row with the entered values
+                newRow.innerHTML = `
+                    <td>${selectedDate}</td>
+                    <td>${morningLevel}</td>
+                    <td>${afternoonLevel}</td>
+                    <td>${eveningLevel}</td>
+                `;
+                // Append the new row to the table body
+                tableBody.appendChild(newRow);
+
+                // Clear the form fields after submission
+                document.getElementById('morning-level').value = '';
+                document.getElementById('afternoon-level').value = '';
+                document.getElementById('evening-level').value = '';
+            });
+
+            // Add event listener for date input change
+            dateInput.addEventListener('change', function () {
+                // Clear the table body
+                tableBody.innerHTML = '';
+            });
+        });
+    </script>
+
 
 </body>
 </html>

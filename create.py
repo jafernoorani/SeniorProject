@@ -1,67 +1,29 @@
-# # import mysql.connector
-
-# # print("Start connecting create.py")
-
-# # # Establishing a connection to the MySQL database
-# # db = mysql.connector.connect(
-# #     host="database-1.cnq4o0i0yw0j.us-east-2.rds.amazonaws.com",
-# #     user="admin",
-# #     passwd="Seniorproject1",
-# #     db="database-1"
-# # )
-
-# # print("Stop connecting create.py")
-
-# # # Creating a cursor object to execute SQL queries
-# # # cur = db.cursor()
-
-# # # Executing an SQL query to create a table named Test with id and name columns
-# # # cur.execute("CREATE TABLE Test (id INTEGER PRIMARY KEY AUTO_INCREMENT, name TEXT)")
-
-# # # Committing the changes
-# # # db.commit()
-
-# # # Closing the database connection
-# # # db.close()
-
-
-
-# import mysql.connector
-
-# endpoint = 'database-1.cnq4o0i0yw0j.us-east-2.rds.amazonaws.com'
-# username = 'admin'
-# password = 'Seniorproject1'
-# database = 'database-1'
-
-# cnx = mysql.connector.connect(user=username, password=password,
-#                               host=endpoint, database=database)
-
-
-
-
 import pymysql
-import sys
-import boto3
-import os
 
-ENDPOINT="database-1.cnq4o0i0yw0j.us-east-2.rds.amazonaws.com"
-PORT="3306"
-USER="admin"
-REGION="us-east-2a"
-DBNAME="database-1"
-os.environ['LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN'] = '1'
+# Database connection settings
+ENDPOINT = "ec2-54-226-103-123.compute-1.amazonaws.com"
+PORT = 3306
+USER = "author"
+PASSWORD = "authorpass123"
+DBNAME = "SugarDaddy"
 
-#gets the credentials from .aws/credentials
-session = boto3.Session(profile_name='default')
-client = session.client('rds')
+try:
+    # Establish a connection to the database
+    conn = pymysql.connect(host=ENDPOINT, port=PORT, user=USER, password=PASSWORD, database=DBNAME)
 
-token = client.generate_db_auth_token(DBHostname=ENDPOINT, Port=PORT, DBUsername=USER, Region=REGION)
+    # Create a cursor object to execute SQL queries
+    cursor = conn.cursor()
 
-# try:
-#     conn =  pymysql.connect(host=ENDPOINT, user=USER, passwd=token, port=PORT, database=DBNAME)
-#     cur = conn.cursor()
-#     cur.execute("""SELECT now()""")
-#     query_results = cur.fetchall()
-#     print(query_results)
-# except Exception as e:
-#     print("Database connection failed due to {}".format(e))
+    # Execute a sample query (e.g., select current time)
+    cursor.execute("SELECT NOW()")
+
+    # Fetch and print the result
+    row = cursor.fetchone()
+    print("Current time from the database:", row[0])
+
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+
+except pymysql.MySQLError as e:
+    print("MySQL error:", e)
