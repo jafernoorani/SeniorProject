@@ -41,6 +41,25 @@
       border-radius: 5px;
       margin-top: 20px;
     }
+    /* ChatGPT Chatbox styling */
+    #chat-container {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    #chat-display {
+      height: 200px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+    }
+    #user-input {
+      width: calc(100% - 70px);
+      margin-right: 10px;
+    }
+    button {
+      width: 60px;
+    }
   </style>
 </head>
 <body>
@@ -53,6 +72,13 @@
 
   <div id="info-container">
     <!-- Content will be dynamically generated here -->
+  </div>
+  
+  <!-- ChatGPT Chatbox -->
+  <div id="chat-container">
+    <div id="chat-display"></div>
+    <input type="text" id="user-input" placeholder="Type your message here...">
+    <button onclick="sendMessage()">Send</button>
   </div>
 </div>
 
@@ -120,6 +146,30 @@
   // Generate content based on average level, age, and weight
   const infoContainer = document.getElementById('info-container');
   infoContainer.innerHTML = generateContent(averageLevel, age, weight);
+
+  // Function to send a message to ChatGPT backend
+  function sendMessage() {
+    const userInput = document.getElementById('user-input').value;
+    const chatDisplay = document.getElementById('chat-display');
+    // Display user message
+    chatDisplay.innerHTML += `<div>User: ${userInput}</div>`;
+    // Send message to backend (replace 'YOUR_BACKEND_URL' with your actual backend URL)
+    fetch('YOUR_BACKEND_URL', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Display ChatGPT response
+      chatDisplay.innerHTML += `<div>ChatGPT: ${data.message}</div>`;
+    })
+    .catch(error => console.error('Error:', error));
+    // Clear user input field
+    document.getElementById('user-input').value = '';
+  }
 </script>
 
 </body>
