@@ -46,58 +46,45 @@ function downloadFile(filename, mimeType, content) {
 
 // Function to generate and download PDF
 function generateAndDownloadPDF(filename) {
-    // Create a temporary div
-    const tempDiv = document.createElement('div');
-    tempDiv.style.display = 'inline-block';
-
-    // Clone the .card elements and append them to the temporary div
-    const chartCard = document.getElementById('bloodSugarChart').closest('.card').cloneNode(true);
-    const summaryCard = document.getElementById('data-table').closest('.card').cloneNode(true);
-    
-    tempDiv.appendChild(chartCard);
-    tempDiv.appendChild(summaryCard);
-
-    // Convert the chart canvas to an image after cloning
-    const clonedChartCanvas = chartCard.querySelector('canvas');
-    if (clonedChartCanvas) {
-        const chartImageUrl = clonedChartCanvas.toDataURL('image/png');
-        const chartImage = new Image();
-        chartImage.src = chartImageUrl;
-        chartImage.onload = () => { // Ensure the image is loaded before replacing
-            clonedChartCanvas.parentNode.replaceChild(chartImage, clonedChartCanvas);
-        };
-    }
-
-    // Append the temporary div to the body
-    document.body.appendChild(tempDiv);
-
-    // Wait for the chart image to load before rendering the PDF
-    setTimeout(() => {
-        html2canvas(tempDiv, { scale: 2, useCORS: true }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new window.jspdf.jsPDF({
-                orientation: 'p',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            // Calculate dimensions to maintain aspect ratio
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(filename);
-
-            // Remove the temporary div after generating the PDF
-            document.body.removeChild(tempDiv);
-        }).catch(error => {
-            console.error('Error generating PDF:', error);
-            document.body.removeChild(tempDiv);
+    const chartCanvas = document.getElementById('bloodSugarChart');
+    if (chartCanvas) {
+        const chartImageUrl = chartCanvas.toDataURL('image/png'); // Capture the current state of the canvas as an image
+        const pdf = new window.jspdf.jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4'
         });
-    }, 100); // Adjust the timeout if necessary
-}
 
+        // Fixed dimensions for the chart and summary
+        const pageWidth = pdf.internal.pageSize.getWidth() - 40; // 20mm margin on each side
+        const chartHeight = 100; // Fixed height for the chart
+
+        // Add chart image to PDF
+        pdf.addImage(chartImageUrl, 'PNG', 20, 20, pageWidth, chartHeight);
+
+        // Prepare to add the summary
+        const summaryCard = document.getElementById('data-table').closest('.card');
+        html2canvas(summaryCard, { scale: 3, windowWidth: 1200, windowHeight: summaryCard.scrollHeight, logging: true, useCORS: true }).then(canvas => {
+            const summaryImg = canvas.toDataURL('image/png');
+            const summaryImgHeight = (canvas.height * pageWidth) / canvas.width; // Maintain aspect ratio
+
+            // Check if the summary will fit on the same page; if not, add a new page
+            const currentHeight = 20 + chartHeight + 10; // Height used by the chart plus a 10mm margin
+            if (currentHeight + summaryImgHeight > pdf.internal.pageSize.getHeight() - 20) {
+                pdf.addPage(); // Add a new page if the summary won't fit
+                pdf.addImage(summaryImg, 'PNG', 20, 20, pageWidth, summaryImgHeight);
+            } else {
+                pdf.addImage(summaryImg, 'PNG', 20, currentHeight, pageWidth, summaryImgHeight); // Add the summary below the chart
+            }
+
+            pdf.save(filename);
+        }).catch(error => {
+            console.error('Error generating PDF for summary:', error);
+        });
+    } else {
+        console.error('Chart canvas not found.');
+    }
+}
 
 
 
