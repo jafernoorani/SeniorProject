@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Management Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            position: fixed;
+            width: 200px; /* Adjusted width */
+            height: 100%;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #454d55;
+            text-align: center;
+        }
+        .sidebar ul.components {
+            padding: 20px 0;
+        }
+        .sidebar ul li a {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            display: block;
+            color: #adb5bd;
+        }
+        .sidebar ul li a:hover {
+            background: #495057;
+        }
+        .content {
+            margin-left: 200px; /* Adjusted margin */
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 10px 10px 0 0;
+        }
+        .card-title {
+            margin-bottom: 0;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .table {
+            background-color: #fff;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Dashboard</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li>
+                <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabetes</a>
+            </li>
+            <li>
+                <a href="weightDashboard.html"><i class="fas fa-weight"></i> Weight</a>
+            </li>
+            <li>
+                <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
+            </li>
+            <li>
+                <a href="analytics_window.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+            </li>
+            <li>
+                <a href="export.html"><i class="fas fa-file-export"></i> Export</a>
+            </li>
+            <li class="active">
+                <a href="account.html"><i class="fas fa-user"></i> Account</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <h1 class="mt-4">Weight Management Dashboard</h1>
+        <!-- Form input group -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Weight Entry</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="weight">Weight (lbs)</label>
+                            <input type="number" id="weight" class="form-control" placeholder="lbs">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="weightDate">Date</label>
+                            <input type="date" id="weightDate" class="form-control" value="<?php echo date('Y-m-d'); ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button id="submit-weight" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Weight Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="weight-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Weight (lbs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Chart -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Weight Chart</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="weightChart" style="width: 100%; height: 40"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        var weightData = []; // Array to store weight data
+
+        // Function to initialize weight chart
+        function initWeightChart() {
+            var ctx = document.getElementById('weightChart').getContext('2d');
+            var weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Weight (lbs)',
+                        data: [],
+                        borderColor: '#007bff',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+            return weightChart;
+        }
+
+        // Initialize weight chart
+        var weightChart = initWeightChart();
+
+        // Function to handle weight submission
+        document.getElementById('submit-weight').addEventListener('click', function() {
+            var weightInput = document.getElementById('weight');
+            var weight = weightInput.value.trim();
+
+            if (!weight) {
+                alert('Please enter a valid weight.');
+                return;
+            }
+
+            var weightDateInput = document.getElementById('weightDate');
+            var weightDate = weightDateInput.value;
+
+            if (!weightDate) {
+                alert('Please select a date.');
+                return;
+            }
+
+            var tableBody = document.querySelector('#weight-table tbody');
+
+            var newRow = tableBody.insertRow();
+            var dateCell = newRow.insertCell(0);
+            var weightCell = newRow.insertCell(1);
+
+            dateCell.textContent = weightDate;
+            weightCell.textContent = weight;
+
+            // Add the weight entry to the weightData array
+            weightData.push({ date: weightDate, weight: parseFloat(weight) });
+
+            weightInput.value = '';
+            weightDateInput.value = '';
+
+            // Update weight chart
+            updateWeightChart(weightChart);
+        });
+
+// Function to update weight chart
+function updateWeightChart(chart) {
+    // Sort weight data by date in ascending order
+    weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Extract data after sorting
+    var dates = weightData.map(entry => entry.date);
+    var weights = weightData.map(entry => entry.weight);
+
+    // Update chart data
+    chart.data.labels = dates;
+    chart.data.datasets[0].data = weights;
+    chart.update();
+}
+
+        // Function to get today's date in the format YYYY-MM-DD
+        function getTodayDate() {
+            var today = new Date();
+            var month = (today.getMonth() + 1).toString().padStart(2, '0');
+            var day = today.getDate().toString().padStart(2, '0');
+            var year = today.getFullYear();
+
+            return year + '-' + month + '-' + day;
+        }
+
+        // Set today's date as the default value for the weightDate input field
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('weightDate').value = getTodayDate();
+        });
+    </script>
+</body>
+</html>
