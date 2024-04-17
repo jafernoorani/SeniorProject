@@ -5,25 +5,26 @@ document.addEventListener('DOMContentLoaded', function() {
             var exportFormat = $('#exportFormat').val();
             var date = new Date();
             var dateString = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-            var filename = "Blood_Sugar_" + dateString;
+            var pageType = document.querySelector('.content').getAttribute('data-page-type'); // Add a data attribute in HTML
+            var filename = pageType + "_" + dateString;
 
             switch (exportFormat) {
                 case 'csv':
                     filename += ".csv";
-                    var content = convertToCSV("This is a placeholder for blood sugar data."); 
+                    var content = convertToCSV("This is a placeholder for " + pageType + " data."); 
                     downloadFile(filename, 'text/csv', content);
                     break;
                 case 'json':
                     filename += ".json";
-                    var content = JSON.stringify("This is a placeholder for blood sugar data."); 
+                    var content = JSON.stringify("This is a placeholder for " + pageType + " data."); 
                     downloadFile(filename, 'application/json', content);
                     break;
                 case 'pdf':
-                    generateAndDownloadPDF(filename); // No need to add ".pdf" again
+                    generateAndDownloadPDF(filename, pageType);
                     break;
                 default:
                     filename += ".txt";
-                    var content = "This is a placeholder for blood sugar data.";
+                    var content = "This is a placeholder for " + pageType + " data.";
                     downloadFile(filename, 'text/plain', content);
             }
         });
@@ -32,65 +33,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function downloadFile(filename, mimeType, content) {
-    var blob = new Blob([content], { type: mimeType });
-    var link = document.createElement("a");
-    document.body.appendChild(link);
-    link.style.display = 'none'; 
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    document.body.removeChild(link);
-}
+function generateAndDownloadPDF(filename, pageType) {
+    var chartId = pageType === 'Blood_Sugar' ? 'bloodSugarChart' : 'weightChart';
+    var tableId = pageType === 'Blood_Sugar' ? 'data-table' : 'weight-table';
 
+    const chartCanvas = document.getElementById(chartId);
+    const summaryCard = document.getElementById(tableId).closest('.card');
 
-// Function to generate and download PDF
-function generateAndDownloadPDF(filename) {
-    const chartCanvas = document.getElementById('bloodSugarChart');
-    if (chartCanvas) {
-        const chartImageUrl = chartCanvas.toDataURL('image/png'); // Capture the current state of the canvas as an image
+    if (chartCanvas && summaryCard) {
+        const chartImageUrl = chartCanvas.toDataURL('image/png');
         const pdf = new window.jspdf.jsPDF({
             orientation: 'p',
             unit: 'mm',
             format: 'a4'
         });
 
-        // Fixed dimensions for the chart and summary
-        const pageWidth = pdf.internal.pageSize.getWidth() - 40; // 20mm margin on each side
-        const chartHeight = 100; // Fixed height for the chart
-
         // Add chart image to PDF
+        const pageWidth = pdf.internal.pageSize.getWidth() - 40;
+        const chartHeight = 100;
         pdf.addImage(chartImageUrl, 'PNG', 20, 20, pageWidth, chartHeight);
 
         // Prepare to add the summary
-        const summaryCard = document.getElementById('data-table').closest('.card');
         html2canvas(summaryCard, { scale: 3, windowWidth: 1200, windowHeight: summaryCard.scrollHeight, logging: true, useCORS: true }).then(canvas => {
             const summaryImg = canvas.toDataURL('image/png');
-            const summaryImgHeight = (canvas.height * pageWidth) / canvas.width; // Maintain aspect ratio
-
-            // Check if the summary will fit on the same page; if not, add a new page
-            const currentHeight = 20 + chartHeight + 10; // Height used by the chart plus a 10mm margin
+            const summaryImgHeight = (canvas.height * pageWidth) / canvas.width;
+            const currentHeight = 20 + chartHeight + 10;
             if (currentHeight + summaryImgHeight > pdf.internal.pageSize.getHeight() - 20) {
-                pdf.addPage(); // Add a new page if the summary won't fit
+                pdf.addPage();
                 pdf.addImage(summaryImg, 'PNG', 20, 20, pageWidth, summaryImgHeight);
             } else {
-                pdf.addImage(summaryImg, 'PNG', 20, currentHeight, pageWidth, summaryImgHeight); // Add the summary below the chart
+                pdf.addImage(summaryImg, 'PNG', 20, currentHeight, pageWidth, summaryImgHeight);
             }
-
             pdf.save(filename);
         }).catch(error => {
             console.error('Error generating PDF for summary:', error);
         });
     } else {
-        console.error('Chart canvas not found.');
+        console.error('Chart canvas or data table not found.');
     }
 }
 
-
-
-// Example function to convert content to CSV format
 function convertToCSV(content) {
-    // Implement conversion based on your data structure
-    return "Column1,Column2\nValue1,Value2";
+    return "Column1,Column2\nValue1,Value2"; // Adjust this to dynamically generate CSV content based on the data
 }
+
 
