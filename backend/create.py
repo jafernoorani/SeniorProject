@@ -4,11 +4,12 @@ import pymysql
 app = Flask(__name__)
 
 # Database connection settings
-ENDPOINT = "54.226.103.123"
-PORT = 3306
-USER = "author"
-PASSWORD = "authorpass123"
-DBNAME = "SugarDaddy"
+# Get the following values from an environment file
+ENDPOINT = "111.111.111.111"
+PORT = 111
+USER = "YourUserName"
+PASSWORD = "YourPassWord"
+DBNAME = "YourDataBaseName"
 
 def create_patient_data_table():
     try:
@@ -29,7 +30,6 @@ def create_patient_data_table():
                 Height_in FLOAT,
                 Weight FLOAT,
                 Age INT,
-                bloodData VARCHAR(10),
                 Symptoms TEXT,
                 doB DATE
             )
