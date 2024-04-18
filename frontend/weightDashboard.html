@@ -160,14 +160,33 @@
                 <canvas id="weightChart" style="width: 100%; height: 40"></canvas>
             </div>
         </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Export Options</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="exportType">Select Export Format:</label>
+                    <select id="exportFormat" class="form-control">
+                        <option value="txt">TXT</option>
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                        <option value="pdf">PDF</option>
+                    </select>                                    
+                </div>
+                <button id="exportBtn" class="btn btn-primary">Export</button>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- Custom JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+    <script src="export.js"></script>
+    
     <script>
         var weightData = []; // Array to store weight data
 
