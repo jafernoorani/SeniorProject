@@ -2,44 +2,44 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("DOMContentLoaded event fired");
     const signupForm = document.getElementById("signupForm");
 
-    signupForm.addEventListener("submit", function(event) {
-        console.log("Form submission event fired");
-        event.preventDefault();
-        
-        // Get the form values
-        const fullname = document.getElementById("fullname").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-        const username = document.getElementById("username").value;
+    if (signupForm) { // Check if the form element exists
+        signupForm.addEventListener("submit", function(event) {
+            console.log("Form submission event fired");
+            event.preventDefault(); // Prevent default form submission behavior
+            
+            // Get the form values
+            const fullname = document.getElementById("fullName").value;
+            const email = document.getElementById("emailAddress").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+            const username = document.getElementById("username").value;
 
-        // Validate the email format
-        if (!isValidEmail(email)) {
-            alert("Please enter a valid email address");
-            return;
-        }
+            // Validate the email format
+            if (!isValidEmail(email)) {
+                alert("Please enter a valid email address");
+                return;
+            }
 
-        // Validate the form data
-        if (password !== confirmPassword) {
-            alert("Passwords do not match");
-            return;
-        }
+            // Validate the form data
+            if (password !== confirmPassword) {
+                alert("Passwords do not match");
+                return;
+            }
 
-        // Create an object to store the user data
-        const userData = {
-            fullname: fullname,
-            email: email,
-            password: password,
-            username: username
-        };
+            // Create a FormData object and append form data
+            const formData = new FormData();
+            formData.append('fullName', fullname);
+            formData.append('emailAddress', email);
+            formData.append('password', password);
+            formData.append('confirm-password', confirmPassword);
+            formData.append('username', username);
 
-        // Output the user data to the console
-        console.log("User Data:", userData);
-
-
-        // Reset the form after submission
-        signupForm.reset();
-    });
+            // Send the form data to the backend server
+            sendData(formData);
+        });
+    } else {
+        console.error("Signup form not found");
+    }
 });
 
 // Function to validate email format
@@ -47,29 +47,21 @@ function isValidEmail(email) {
     return /\S+@\S+\.\S+/.test(email);
 }
 
-
-
-function submitForm() {
-    // Get form data
-    var formData = {
-        fullname: document.getElementById('fullname').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value,
-        username: document.getElementById('username').value
-    };
-
-    // Send form data to backend server
-    $.ajax({
-        type: 'POST',
-        url: '/saveData', // Replace with your backend endpoint
-        data: formData,
-        success: function(response) {
-            alert('Account created successfully!');
-        },
-        error: function(xhr, status, error) {
-            console.error('Error creating account:', error);
-            alert('Error creating account. Please try again later.');
+// Function to send data to the backend server
+function sendData(formData) {
+    // Send POST request to the backend endpoint
+    fetch('/saveData', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        console.log('Data sent successfully');
+        // Optionally handle success response here
+    })
+    .catch(error => {
+        console.error('Error sending data:', error.message);
     });
 }
-
