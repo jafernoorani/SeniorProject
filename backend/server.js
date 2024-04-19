@@ -54,8 +54,10 @@ app.post('/saveData', (req, res) => {
 
 //get me to this html form
 app.get('/createAccount', (req, res) => {
+    // http://localhost:3000/createAccount
     // res.sendFile(__dirname + '/index.html');
-    res.sendFile(__dirname+ '/createAccount.html');
+    res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
+
 });
 
 
@@ -66,6 +68,7 @@ app.post('/createAccount', (req, res) => {
 
 
 //get me to this html form
+//http://localhost:3000/user/4
 app.get('/user/:id', (req, res) => {
     // Insert user data into MySQL database
     const sql = 'SELECT fullName, emailAddress, password, username FROM patientData WHERE patientID = ?';
@@ -81,10 +84,65 @@ app.get('/user/:id', (req, res) => {
 
 
 //login stuff
+// app.post('/loginAccount', (req, res) => {
+//     res.status(200).send(req.body);
+//     //logic for verifying username and password
+//     //select query and check if the result has a value
+
+
+//     //if yes --> update patientTable --> isLoggedIn
+//     //then send them to the next paoge
+// });
+
 app.post('/loginAccount', (req, res) => {
-    res.status(200).send(req.body);
+    const { username, password } = req.body;
+
+    // Execute a SQL query to find the user and update the isLoggedIn status
+    const query = `UPDATE patientData SET isLoggedIn = true WHERE username = ? AND password = ?`;
+    db.query(query, [username, password], (err, result) => {
+        if (err) {
+            console.error("Error updating user:", err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        if (result.affectedRows === 0) {
+            res.status(401).send("Invalid username or password");
+            return;
+        }
+        res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
+
+
+    });
 });
 
+
+
+
+
+
+
+//get me to this html form
+app.get('/loginAccount', (req, res) => {
+    // http://localhost:3000/createAccount
+    res.sendFile(path.join(__dirname, '/../frontend/login.html'));
+
+});
+
+
+
+
+function isLoggedIn(patientID) {
+    //check if paitentID exists 
+    //check if patientId is loggedin 
+    //if both of these are true 
+        //return true 
+
+    //else return false
+
+    //if logged in --> go to dahsboard.html
+    //if else go to login.html
+}
 
 // Start the server
 const port = process.env.PORT || 3000;
