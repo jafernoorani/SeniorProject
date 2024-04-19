@@ -1,13 +1,12 @@
 // const http = require('http');
 const express = require('express');
 const mysql = require('mysql');
-const dotenv = require('dotenv');
 const app = express()
 const path = require('path');
 const bodyParser  = require('body-parser');
+var events = require('events');
 app.use(express.json()); // accept data in json format
 app.use(express.urlencoded()); // decode data send thru html form
-dotenv.config({path: '.env'});
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -33,11 +32,11 @@ app.get("/dashboard", function(req, res) {
 
 // create connection to the DB server
 let connection = mysql.createConnection({
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-	database: process.env.DB_NAME,
+        host: JAFER PUT IP HERE,
+        port: JAFER PUT PORT HERE,
+        user: JAFER PUT USER HERE,
+        password: yeah,
+        database: SugarDaddy,
 });
 
 app.get("/connect", (req, res) => {
@@ -46,15 +45,15 @@ app.get("/connect", (req, res) => {
   // connect to the DB server
   connection.connect((err) => {
         if (err) {
-		res.send(err); 
-		return console.error(err.message);
-	}
+                res.send(err); 
+                return console.error(err.message);
+        }
 
         console.log('Connected to the MariaDB server.');
 
-        connection.query("SELECT * FROM patientData", (err, results) => {
+        connection.query("SELECT * FROM vitalData WHERE patientID=1", (err, results) => {
                 if (err) {
-		      res.send(err);
+                      res.send(err);
                       console.error("Error querying the database: ", err)
                         return
                 }
@@ -70,16 +69,16 @@ app.post("/data", function(req, res) {
   var emailAddr = req.body.email;
   var userName = req.body.username;
   var pass = req.body.password;
-  
   connection.query("INSERT INTO patientData (fullName, emailAddress, userName, password) VALUES (?, ?, ?, ?)", [fullName, emailAddr, userName, pass], function(err, results){
-	  if(err) {
+          if(err) {
                res.send(err);
-	       console.error("Error inserting to the database: ", err)
-		  return
-	  }
-	  console.log("Insert results: ", results);
-	  res.send(results);
-	  return
+               console.error("Error inserting to the database: ", err)
+                  return
+          }
+          console.log("Insert results: ", results);
+          res.send(results);
+          return
+          //res.redirect("http://54.226.103.123/dashboard.html");
+          //res.redirect(path.join(__dirname+'/dashboard.html'));
   })
-  
 });
