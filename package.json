@@ -3,6 +3,7 @@
     "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.3",
     "express": "^4.19.2",
+    "html": "^1.0.0",
     "mysql": "^2.18.1"
   },
   "name": "seniorproject",
