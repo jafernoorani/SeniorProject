@@ -110,7 +110,7 @@
     <div class="content" data-page-type="Blood_Sugar">
         <h1 class="mt-4">Diabetes Management Dashboard</h1>
         <!-- Form input group -->
-        <form id="bloodSugarForm" action="/saveBloodSugarData" method="POST">
+        <form id="bloodSugarForm" method="POST">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title">Blood Sugar Levels</h5>
@@ -225,6 +225,45 @@
     <script src="export.js"></script>
     <script src="dashboard.js"></script>
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the form element
+    var form = document.getElementById('bloodSugarForm');
+
+    // Add an event listener for form submission
+    form.addEventListener('submit', function(event) {
+        // Prevent default form submission behavior
+        event.preventDefault();
+
+        // Gather form data
+        var formData = new FormData(form);
+
+        // Send form data using AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/saveBloodSugarData');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Handle success response
+                console.log(xhr.responseText);
+                alert('Blood sugar data saved successfully!');
+            } else {
+                // Handle error response
+                console.error(xhr.statusText);
+                alert('Error saving blood sugar data. Please try again later.');
+            }
+        };
+        xhr.onerror = function() {
+            // Handle network errors
+            console.error('Network error occurred');
+            alert('Error saving blood sugar data. Please try again later.');
+        };
+        xhr.send(new URLSearchParams(formData));
+    });
+});
+
+
+
+
       document.addEventListener('DOMContentLoaded', function () {
         // Array to store blood sugar data
         var bloodSugarData = [];
