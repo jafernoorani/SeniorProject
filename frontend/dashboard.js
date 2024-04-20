@@ -116,10 +116,15 @@ function clearSummaryTable() {
 
 // Function to update the summary table based on the selected date
 function updateSummaryForDate(selectedDate) {
-    clearSummaryTable(); // Clear the table every time before updating
+    console.log("Updating summary for date:", selectedDate); // Add this line for debugging
+
+    // Clear the table every time before updating
+    clearSummaryTable();
 
     const summaryTableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
     const dateIndex = dates.indexOf(selectedDate);
+
+    console.log("Date index:", dateIndex); // Add this line for debugging
 
     // Check if there is data for the selected date and update the table
     if (dateIndex !== -1) {
@@ -139,8 +144,10 @@ function updateSummaryForDate(selectedDate) {
 }
 
 // Event listener for date change to update the summary table
-document.getElementById('datePicker').addEventListener('change', function(event) {
+document.getElementById('selectedDate').addEventListener('change', function(event) {
     const selectedDate = event.target.value;
+    console.log("Selected Date:", selectedDate); // Add this line for debugging
     updateSummaryForDate(selectedDate);
 });
+
 

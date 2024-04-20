@@ -1,6 +1,6 @@
 const express = require('express');
 const html = require('html');
-
+const session = require('express-session');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -9,6 +9,16 @@ const app = express();
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'backend')));
+
+
+// Middleware for session management
+app.use(session({
+    secret: 'your_secret_keyS6fJ2v@Czn!g8*wQx3uYzRt7#hEaP5',
+    resave: false,
+    saveUninitialized: true
+}));
+
+
 
 // Create connection to MySQL database
 const db = mysql.createConnection({
@@ -64,7 +74,52 @@ app.get('/createAccount', (req, res) => {
 
 app.post('/createAccount', (req, res) => {
     res.status(200).send(req.body);
+    
 });
+
+// Display the form
+app.get('/saveBloodSugarData', (req, res) => {
+    // Assuming you have a file named 'blood_sugar_form.html' that contains your form HTML
+    res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
+});
+
+// Handle form submission
+app.post('/saveBloodSugarData', (req, res) => {
+    const { morningLevel, afternoonLevel, eveningLevel, selectedDate } = req.body;
+
+    // Retrieve the patientID from the session
+    const patientID = req.session.patientID;
+
+    // Log the received data for debugging
+    console.log("Received blood sugar data:");
+    console.log("Morning Level:", morningLevel);
+    console.log("Afternoon Level:", afternoonLevel);
+    console.log("Evening Level:", eveningLevel);
+    console.log("Selected Date:", selectedDate);
+    console.log("Patient ID:", patientID);
+
+    // Insert blood sugar data into MySQL database
+    const sql = 'INSERT INTO vitalData (patientID, vitalsTakenDate, vitalType, vitalValue) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)';
+    const values = [
+        patientID, selectedDate, 'BloodSugar - Morning', morningLevel,
+        patientID, selectedDate, 'BloodSugar - Afternoon', afternoonLevel,
+        patientID, selectedDate, 'BloodSugar - Evening', eveningLevel
+    ];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            // Log the database error for debugging
+            console.error("Error saving blood sugar data:", err);
+            res.status(500).send('Error saving blood sugar data');
+            return;
+        }
+        // Log the successful data insertion for debugging
+        console.log("Blood sugar data saved successfully");
+        res.status(200).send('Blood sugar data saved successfully');
+    });
+});
+
+
 
 
 //get me to this html form
@@ -94,25 +149,38 @@ app.get('/user/:id', (req, res) => {
 //     //then send them to the next paoge
 // });
 
+
+// Login endpoint
 app.post('/loginAccount', (req, res) => {
     const { username, password } = req.body;
 
-    // Execute a SQL query to find the user and update the isLoggedIn status
-    const query = `UPDATE patientData SET isLoggedIn = true WHERE username = ? AND password = ?`;
+    // Execute a SQL query to find the user
+    const query = `SELECT patientID FROM patientData WHERE username = ? AND password = ?`;
     db.query(query, [username, password], (err, result) => {
         if (err) {
-            console.error("Error updating user:", err);
+            console.error("Error finding user:", err);
             res.status(500).send("Internal Server Error");
             return;
         }
 
-        if (result.affectedRows === 0) {
+        if (result.length === 0) {
+            // No user found with the provided credentials
             res.status(401).send("Invalid username or password");
             return;
         }
-        res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
 
+        // Retrieve the patientID from the query result
+        const patientID = result[0].patientID;
 
+        // Store the patientID in the session
+        req.session.patientID = patientID;
+
+        // Log the session ID and patientID
+        console.log("Session ID:", req.sessionID);
+        console.log("Patient ID:", req.session.patientID);
+
+        // Redirect the user to the dashboard
+        res.redirect('/dashboard.html');
     });
 });
 
@@ -129,6 +197,46 @@ app.get('/loginAccount', (req, res) => {
 
 });
 
+// Route to handle logout using POST method
+app.post('/logout', (req, res) => {
+    if (req.session && req.session.patientID) {
+        const patientID = req.session.patientID;
+        const query = `UPDATE patientData SET isLoggedIn = NULL WHERE patientID = ?`;
+
+        // Update the database to set isLoggedIn to NULL
+        db.query(query, [patientID], (err, result) => {
+            if (err) {
+                console.error("Error updating logout status in database:", err);
+                return res.status(500).send("Internal Server Error");
+            }
+
+            console.log("Database updated, user logged out successfully, patientID:", patientID);
+
+            // Now destroy the session
+            req.session.destroy(sessionErr => {
+                if (sessionErr) {
+                    console.error("Error during session destruction:", sessionErr);
+                    return res.status(500).send("Internal Server Error");
+                }
+
+                console.log("Session destroyed, user logged out successfully.");
+                res.redirect('/loginAccount'); // Redirect to the login page
+            });
+        });
+    } else {
+        console.log("No active session found for user, possibly already logged out.");
+        res.status(400).send("No active session found");
+    }
+});
+
+
+
+
+
+
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
+});
 
 
 
