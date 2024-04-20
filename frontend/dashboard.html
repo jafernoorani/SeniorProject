@@ -44,11 +44,13 @@
         .content {
             margin-left: 200px; /* Adjusted margin */
             padding: 20px;
+            overflow: hidden; /* Added */
         }
         .card {
             border: none;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Added */
         }
         .card-header {
             background-color: #fff;
@@ -71,6 +73,10 @@
         }
         .table th, .table td {
             vertical-align: middle;
+        }
+        /* Adjusted the height for the chart container */
+        #bloodSugarChartContainer {
+            height: 400px;
         }
     </style>
 </head>
@@ -104,82 +110,89 @@
     <div class="content" data-page-type="Blood_Sugar">
         <h1 class="mt-4">Diabetes Management Dashboard</h1>
         <!-- Form input group -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Blood Sugar Levels</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="morning-level">Morning Level</label>
-                            <input name="BloodSugar - Morning" type="number" id="morning-level" class="form-control" placeholder="mg/dL">
+        <form id="bloodSugarForm" action="/saveBloodSugarData" method="POST">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Blood Sugar Levels</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="morning-level">Morning Level</label>
+                                <input name="morningLevel" type="number" id="morningLevel" class="form-control" placeholder="mg/dL">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="afternoon-level">Afternoon Level</label>
+                                <input name="afternoonLevel" type="number" id="afternoonLevel" class="form-control" placeholder="mg/dL">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="evening-level">Evening Level</label>
+                                <input name="eveningLevel" type="number" id="eveningLevel" class="form-control" placeholder="mg/dL">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="selected-date">Select Date:</label>
+                                <input name="selectedDate" type="date" id="selectedDate" class="form-control">
+                            </div>
+                        </div>
+                        <div style="display:none" class="col-md-12">
+                            <div class="form-group">
+                                <label for="patientID">PatientID</label>
+                                <input type="number" name="patientID" id="patientID" value="1" class="form-control">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="afternoon-level">Afternoon Level</label>
-                            <input name="BloodSugar - Afternoon" type="number" id="afternoon-level" class="form-control" placeholder="mg/dL">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="evening-level">Evening Level</label>
-                            <input name="BloodSugar - Evening" type="number" id="evening-level" class="form-control" placeholder="mg/dL">
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="selected-date">Select Date:</label>
-                            <input name= "vitalDate" type="date" id="selected-date" class="form-control">
-                        </div>
-                    </div>
-                    <div style="display:none" class="col-md-12">
-                        <div class="form-group">
-                            <label for="patientID">PatientID</label>
-                            <input type="number" name="patientID" id="patientID" value="1" class="form-control">
-                        </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
-                <div class="text-right">
-                    <button id="submit-levels" class="btn btn-primary">Submit</button>
-                </div>
             </div>
-        </div>
-
+        </form>
+    
         <!-- Summary -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Blood Sugar Summary</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Blood Sugar Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="data-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Morning (mg/dL)</th>
+                                        <th>Afternoon (mg/dL)</th>
+                                        <th>Evening (mg/dL)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data rows will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="data-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Morning (mg/dL)</th>
-                                <th>Afternoon (mg/dL)</th>
-                                <th>Evening (mg/dL)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data rows will be added here -->
-                        </tbody>
-                    </table>
+            <div class="col-md-6">
+                <div id="bloodSugarChartContainer" class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Blood Sugar Chart</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="bloodSugarChart" style="width: 100%; height: 100%"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Chart -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Blood Sugar Chart</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="bloodSugarChart" style="width: 100%; height: 40"></canvas>
-            </div>
-        </div>
+        
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title">Export Options</h5>
@@ -199,97 +212,97 @@
         </div>
     </div>
 
-     <!-- Bootstrap JS and dependencies -->
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
  
-     <!-- At the end of your body tag -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+    <!-- At the end of your body tag -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
  
-     <!-- Custom JS -->
-     <script src="export.js"></script>
-     <script src="dashboard.js"></script>
+    <!-- Custom JS -->
+    <script src="export.js"></script>
+    <script src="dashboard.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Array to store blood sugar data
-            var bloodSugarData = [];
+      document.addEventListener('DOMContentLoaded', function () {
+        // Array to store blood sugar data
+        var bloodSugarData = [];
 
-            // Function to initialize blood sugar chart
-            function initBloodSugarChart() {
-                var ctx = document.getElementById('bloodSugarChart').getContext('2d');
-                var bloodSugarChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            label: 'Morning (mg/dL)',
-                            data: [],
-                            borderColor: '#007bff',
-                            fill: false
-                        }, {
-                            label: 'Afternoon (mg/dL)',
-                            data: [],
-                            borderColor: '#28a745',
-                            fill: false
-                        }, {
-                            label: 'Evening (mg/dL)',
-                            data: [],
-                            borderColor: '#dc3545',
-                            fill: false
+        // Function to initialize blood sugar chart
+        function initBloodSugarChart() {
+            var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+            var bloodSugarChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Morning (mg/dL)',
+                        data: [],
+                        borderColor: '#007bff',
+                        fill: false
+                    }, {
+                        label: 'Afternoon (mg/dL)',
+                        data: [],
+                        borderColor: '#28a745',
+                        fill: false
+                    }, {
+                        label: 'Evening (mg/dL)',
+                        data: [],
+                        borderColor: '#dc3545',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
                         }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
                     }
-                });
-                return bloodSugarChart;
-            }
-
-            // Initialize blood sugar chart
-            var bloodSugarChart = initBloodSugarChart();
-
-            // Function to handle blood sugar level submission
-            document.getElementById('submit-levels').addEventListener('click', function () {
-                var morningLevel = document.getElementById('morning-level').value;
-                var afternoonLevel = document.getElementById('afternoon-level').value;
-                var eveningLevel = document.getElementById('evening-level').value;
-                var selectedDate = document.getElementById('selected-date').value;
-
-                // Create a new row for the table
-                var newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${selectedDate}</td>
-                    <td>${morningLevel}</td>
-                    <td>${afternoonLevel}</td>
-                    <td>${eveningLevel}</td>
-                `;
-                // Append the new row to the table body
-                document.querySelector('#data-table tbody').appendChild(newRow);
-
-                // Add the blood sugar data to the array
-                bloodSugarData.push({
-                    date: selectedDate,
-                    morningLevel: morningLevel,
-                    afternoonLevel: afternoonLevel,
-                    eveningLevel: eveningLevel
-                });
-
-                // Clear the form fields after submission
-                document.getElementById('morning-level').value = '';
-                document.getElementById('afternoon-level').value = '';
-                document.getElementById('evening-level').value = '';
-
-                // Update blood sugar chart
-                updateBloodSugarChart(bloodSugarChart);
+                }
             });
+            return bloodSugarChart;
+        }
+
+        // Initialize blood sugar chart
+        var bloodSugarChart = initBloodSugarChart();
+
+        // Function to handle blood sugar level submission
+        document.getElementById('submit-levels').addEventListener('click', function () {
+            var morningLevel = document.getElementById('morning-level').value;
+            var afternoonLevel = document.getElementById('afternoon-level').value;
+            var eveningLevel = document.getElementById('evening-level').value;
+            var selectedDate = document.getElementById('selected-date').value; // Corrected ID
+
+            // Create a new row for the table
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${selectedDate}</td>
+                <td>${morningLevel}</td>
+                <td>${afternoonLevel}</td>
+                <td>${eveningLevel}</td>
+            `;
+            // Append the new row to the table body
+            document.querySelector('#data-table tbody').appendChild(newRow);
+
+            // Add the blood sugar data to the array
+            bloodSugarData.push({
+                date: selectedDate,
+                morningLevel: morningLevel,
+                afternoonLevel: afternoonLevel,
+                eveningLevel: eveningLevel
+            });
+
+            // Clear the form fields after submission
+            document.getElementById('morning-level').value = '';
+            document.getElementById('afternoon-level').value = '';
+            document.getElementById('evening-level').value = '';
+
+            // Update blood sugar chart
+            updateBloodSugarChart(bloodSugarChart);
+        });
 
         // Function to update blood sugar chart
         function updateBloodSugarChart(chart) {
@@ -310,20 +323,20 @@
             chart.update();
         }
 
+        // Function to get today's date in the format YYYY-MM-DD
+        function getTodayDate() {
+            var today = new Date();
+            var month = (today.getMonth() + 1).toString().padStart(2, '0');
+            var day = today.getDate().toString().padStart(2, '0');
+            var year = today.getFullYear();
 
-            // Function to get today's date in the format YYYY-MM-DD
-            function getTodayDate() {
-                var today = new Date();
-                var month = (today.getMonth() + 1).toString().padStart(2, '0');
-                var day = today.getDate().toString().padStart(2, '0');
-                var year = today.getFullYear();
+            return year + '-' + month + '-' + day;
+        }
 
-                return year + '-' + month + '-' + day;
-            }
+        // Set today's date as the default value for the selected date input field
+        document.getElementById('selected-date').value = getTodayDate();
+    });
 
-            // Set today's date as the default value for the selected date input field
-            document.getElementById('selected-date').value = getTodayDate();
-        });
     </script>
 </body>
 </html>
