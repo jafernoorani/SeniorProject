@@ -104,6 +104,13 @@
             <li class="active">
                 <a href="account.html"><i class="fas fa-user"></i> Account</a>
             </li>
+            <li class="active">
+                <form id="logoutForm" action="/logout" method="POST">
+                    <button id="logoutButton" class="btn btn-link" type="submit">
+                        <i class="fas fa-user"></i> Log Out
+                    </button>
+                </form>                                              
+            </li> 
         </ul>
     </nav>
 
@@ -377,5 +384,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example: Assume patientID is stored in local storage or fetched from an API
+            // Here's how you might dynamically set it:
+            const patientID = localStorage.getItem('patientID'); // Get patientID from local storage or similar
+        
+            // Set the form's action attribute dynamically
+            const logoutForm = document.getElementById('logoutForm');
+            if (patientID && logoutForm) {
+                logoutForm.action = `/logout/${patientID}`;
+            }
+        });
+        </script>
+        
 </body>
 </html>

@@ -197,6 +197,43 @@ app.get('/loginAccount', (req, res) => {
 
 });
 
+// Route to handle logout using POST method
+app.post('/logout', (req, res) => {
+    if (req.session && req.session.patientID) {
+        const patientID = req.session.patientID;
+        const query = `UPDATE patientData SET isLoggedIn = NULL WHERE patientID = ?`;
+
+        // Update the database to set isLoggedIn to NULL
+        db.query(query, [patientID], (err, result) => {
+            if (err) {
+                console.error("Error updating logout status in database:", err);
+                return res.status(500).send("Internal Server Error");
+            }
+
+            console.log("Database updated, user logged out successfully, patientID:", patientID);
+
+            // Now destroy the session
+            req.session.destroy(sessionErr => {
+                if (sessionErr) {
+                    console.error("Error during session destruction:", sessionErr);
+                    return res.status(500).send("Internal Server Error");
+                }
+
+                console.log("Session destroyed, user logged out successfully.");
+                res.redirect('/loginAccount'); // Redirect to the login page
+            });
+        });
+    } else {
+        console.log("No active session found for user, possibly already logged out.");
+        res.status(400).send("No active session found");
+    }
+});
+
+
+
+
+
+
 app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
 });
