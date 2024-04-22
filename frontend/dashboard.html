@@ -233,100 +233,7 @@
     <script src="dashboard.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Function to fetch data from the server
-    function fetchData() {
-        fetch('/dashboard.html')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Parse the received JSON data
-                // Update UI elements with the fetched data
-                updateUI(data);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                // Handle error
-            });
-    }
-
-    // Function to update UI elements with fetched data
-    function updateUI(data) {
-        // Assuming 'data' is an array of objects representing blood sugar data
-        // Get the table body element
-        const tbody = document.querySelector('#data-table tbody');
-
-        // Clear existing rows
-        tbody.innerHTML = '';
-
-        // Loop through the data and create table rows
-        data.forEach(entry => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${entry.selectedDate}</td>
-                <td>${entry.morningLevel}</td>
-                <td>${entry.afternoonLevel}</td>
-                <td>${entry.eveningLevel}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Call the fetchData function when the dashboard page loads
-    fetchData();
-});
-
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the form element
-    var form = document.getElementById('bloodSugarForm');
-
-    // Add an event listener for form submission
-    form.addEventListener('submit', function(event) {
-        // Prevent default form submission behavior
-        event.preventDefault();
-
-        // Gather form data
-        var formData = new FormData(form);
-
-        // Send form data using AJAX
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/saveBloodSugarData');
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Handle success response
-                console.log(xhr.responseText);
-                alert('Blood sugar data saved successfully!');
-            } else {
-                // Handle error response
-                console.error(xhr.statusText);
-                alert('Error saving blood sugar data. Please try again later.');
-            }
-        };
-        xhr.onerror = function() {
-            // Handle network errors
-            console.error('Network error occurred');
-            alert('Error saving blood sugar data. Please try again later.');
-        };
-        xhr.send(new URLSearchParams(formData));
-    });
-});
-
-
-
-
-      document.addEventListener('DOMContentLoaded', function () {
-        // Array to store blood sugar data
-        var bloodSugarData = [];
-
-        // Function to initialize blood sugar chart
-        function initBloodSugarChart() {
+            // Initialize the chart initially without any data
             var ctx = document.getElementById('bloodSugarChart').getContext('2d');
             var bloodSugarChart = new Chart(ctx, {
                 type: 'line',
@@ -359,94 +266,70 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            return bloodSugarChart;
-        }
-
-        // Initialize blood sugar chart
-        var bloodSugarChart = initBloodSugarChart();
-
-        // Function to handle blood sugar level submission
-        document.getElementById('submit-levels').addEventListener('click', function () {
-            var morningLevel = document.getElementById('morning-level').value;
-            var afternoonLevel = document.getElementById('afternoon-level').value;
-            var eveningLevel = document.getElementById('evening-level').value;
-            var selectedDate = document.getElementById('selected-date').value; // Corrected ID
-
-            // Create a new row for the table
-            var newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${selectedDate}</td>
-                <td>${morningLevel}</td>
-                <td>${afternoonLevel}</td>
-                <td>${eveningLevel}</td>
-            `;
-            // Append the new row to the table body
-            document.querySelector('#data-table tbody').appendChild(newRow);
-
-            // Add the blood sugar data to the array
-            bloodSugarData.push({
-                date: selectedDate,
-                morningLevel: morningLevel,
-                afternoonLevel: afternoonLevel,
-                eveningLevel: eveningLevel
-            });
-
-            // Clear the form fields after submission
-            document.getElementById('morning-level').value = '';
-            document.getElementById('afternoon-level').value = '';
-            document.getElementById('evening-level').value = '';
-
-            // Update blood sugar chart
-            updateBloodSugarChart(bloodSugarChart);
-        });
-
-        // Function to update blood sugar chart
-        function updateBloodSugarChart(chart) {
-            // Sort blood sugar data by date in ascending order
-            bloodSugarData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            // Extract data after sorting
-            var dates = bloodSugarData.map(entry => entry.date);
-            var morningLevels = bloodSugarData.map(entry => entry.morningLevel);
-            var afternoonLevels = bloodSugarData.map(entry => entry.afternoonLevel);
-            var eveningLevels = bloodSugarData.map(entry => entry.eveningLevel);
-
-            // Update chart data
-            chart.data.labels = dates;
-            chart.data.datasets[0].data = morningLevels;
-            chart.data.datasets[1].data = afternoonLevels;
-            chart.data.datasets[2].data = eveningLevels;
-            chart.update();
-        }
-
-        // Function to get today's date in the format YYYY-MM-DD
-        function getTodayDate() {
-            var today = new Date();
-            var month = (today.getMonth() + 1).toString().padStart(2, '0');
-            var day = today.getDate().toString().padStart(2, '0');
-            var year = today.getFullYear();
-
-            return year + '-' + month + '-' + day;
-        }
-
-        // Set today's date as the default value for the selected date input field
-        document.getElementById('selected-date').value = getTodayDate();
-    });
-
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Example: Assume patientID is stored in local storage or fetched from an API
-            // Here's how you might dynamically set it:
-            const patientID = localStorage.getItem('patientID'); // Get patientID from local storage or similar
         
-            // Set the form's action attribute dynamically
-            const logoutForm = document.getElementById('logoutForm');
-            if (patientID && logoutForm) {
-                logoutForm.action = `/logout/${patientID}`;
+            // Fetch data and update the chart
+            fetchDataAndUpdateUI();
+        
+            function fetchDataAndUpdateUI() {
+                fetch('/api/dashboard') // Correct endpoint to fetch data
+                    .then(response => response.json())
+                    .then(data => {
+                        updateUI(data);
+                        updateChart(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
             }
+        
+            function updateUI(data) {
+                const tbody = document.querySelector('#data-table tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+                data.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.selectedDate}</td>
+                        <td>${entry.morningLevel}</td>
+                        <td>${entry.afternoonLevel}</td>
+                        <td>${entry.eveningLevel}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        
+            function updateChart(data) {
+                bloodSugarChart.data.labels = data.map(entry => entry.selectedDate);
+                bloodSugarChart.data.datasets[0].data = data.map(entry => entry.morningLevel);
+                bloodSugarChart.data.datasets[1].data = data.map(entry => entry.afternoonLevel);
+                bloodSugarChart.data.datasets[2].data = data.map(entry => entry.eveningLevel);
+                bloodSugarChart.update();
+            }
+        
+            var form = document.getElementById('bloodSugarForm');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                var formData = new FormData(form);
+        
+                fetch('/saveBloodSugarData', { // Assuming '/saveBloodSugarData' is correct
+                    method: 'POST',
+                    body: new URLSearchParams(formData)
+                })
+                .then(response => response.text())
+                .then(responseText => {
+                    alert('Blood sugar data saved successfully!');
+                    fetchDataAndUpdateUI(); // Re-fetch data to update UI
+                })
+                .catch(error => {
+                    console.error('Error saving blood sugar data:', error);
+                    alert('Error saving blood sugar data. Please try again later.');
+                });
+            });
+        
+            // Set today's date as the default for the selected date input field
+            document.getElementById('selected-date').value = new Date().toISOString().split('T')[0];
         });
         </script>
+        
         
 </body>
 </html>

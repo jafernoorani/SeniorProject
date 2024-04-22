@@ -18,6 +18,16 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// Place this before your route definitions
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // adjust '*' to fit your needs
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    next();
+});
+
 
 
 // Create connection to MySQL database
@@ -230,7 +240,11 @@ app.post('/logout', (req, res) => {
 });
 
 // Middleware function to fetch data from the database
-app.get('/dashboard.html', (req, res, next) => {
+app.get('/api/dashboard', (req, res) => {
+    if (!req.session.patientID) {
+        res.status(403).send("Access Denied");
+        return;
+    }
     const patientID = req.session.patientID;
 
     // Fetch data from the database for the specific patient
@@ -240,7 +254,7 @@ app.get('/dashboard.html', (req, res, next) => {
             console.error("Error fetching data from database:", err);
             return res.status(500).send("Internal Server Error");
         }
-        
+
         // Log the fetched data to the console
         console.log("Patient's Vital Data:");
         console.log(results);
@@ -255,6 +269,8 @@ app.get('/dashboard.html', (req, res, next) => {
 app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
 });
+
+
 
 
 
