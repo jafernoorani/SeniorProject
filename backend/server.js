@@ -229,28 +229,34 @@ app.post('/logout', (req, res) => {
     }
 });
 
+// Middleware function to fetch data from the database
+app.get('/dashboard.html', (req, res, next) => {
+    const patientID = req.session.patientID;
+
+    // Fetch data from the database for the specific patient
+    const sql = 'SELECT * FROM vitalData WHERE patientID = ?';
+    db.query(sql, [patientID], (err, results) => {
+        if (err) {
+            console.error("Error fetching data from database:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+        
+        // Log the fetched data to the console
+        console.log("Patient's Vital Data:");
+        console.log(results);
+
+        // Send the fetched data as JSON
+        res.json(results);
+    });
+});
 
 
-
-
-
+// Route handler to serve the dashboard HTML file
 app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
 });
 
 
-
-function isLoggedIn(patientID) {
-    //check if paitentID exists 
-    //check if patientId is loggedin 
-    //if both of these are true 
-        //return true 
-
-    //else return false
-
-    //if logged in --> go to dahsboard.html
-    //if else go to login.html
-}
 
 // Start the server
 const port = process.env.PORT || 3000;

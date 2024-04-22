@@ -1,3 +1,44 @@
+// Assume this is the function to populate the dashboard with the fetched data
+function populateDashboard(data) {
+    // Clear existing data
+    morningLevels = [];
+    afternoonLevels = [];
+    eveningLevels = [];
+    dates = [];
+
+    // Clear the chart and table
+    bloodSugarChart.data.labels = [];
+    bloodSugarChart.data.datasets[0].data = [];
+    bloodSugarChart.data.datasets[1].data = [];
+    bloodSugarChart.data.datasets[2].data = [];
+    bloodSugarChart.update();
+    clearSummaryTable();
+
+    // Populate arrays and update chart and table
+    data.forEach(entry => {
+        morningLevels.push(entry.morningLevel);
+        afternoonLevels.push(entry.afternoonLevel);
+        eveningLevels.push(entry.eveningLevel);
+        dates.push(entry.selectedDate);
+
+        updateChart(bloodSugarChart, entry.selectedDate, entry.morningLevel, entry.afternoonLevel, entry.eveningLevel);
+        addDataToTable(entry.selectedDate, entry.morningLevel, entry.afternoonLevel, entry.eveningLevel);
+    });
+}
+
+// Fetch data from the server
+fetch('/dashboard.html')
+    .then(response => response.json())
+    .then(data => {
+        // Once data is fetched, populate the dashboard
+        populateDashboard(data);
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+
+
+
 // Create arrays to store the blood sugar levels
 let morningLevels = [];
 let afternoonLevels = [];
