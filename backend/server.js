@@ -50,19 +50,69 @@ db.connect((err) => {
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: false }));
 
-// Route to handle form submission
+// Route to handle form submission (for both registration and login)
 app.post('/saveData', (req, res) => {
-    const { fullName, emailAddress, password, username } = req.body;
+    const { fullName, emailAddress, password, username, action } = req.body;
 
-        // Insert user data into MySQL database
-        const sql = 'INSERT INTO patientData (fullName, emailAddress, password, userName) VALUES (?, ?, ?, ?)';
-        db.query(sql, [fullName, emailAddress, password, username], (err, result) => {
-            if (err) {
-                res.status(500).send('Error saving user data');
-                throw err;
+    // Check the value of the 'action' parameter to determine the action
+    if (action === 'register') {
+        // Check if the username or email already exists
+        const checkQuery = 'SELECT * FROM patientData WHERE username = ? OR emailAddress = ?';
+        db.query(checkQuery, [username, emailAddress], (checkErr, checkResult) => {
+            if (checkErr) {
+                console.error("Error checking username/email:", checkErr);
+                res.status(500).send("Internal Server Error");
+                return;
             }
-            res.status(200).send('User registered successfully');
+
+            if (checkResult.length > 0) {
+                // Username or email already exists
+                res.status(409).send("Username or email already exists");
+                return;
+            }
+
+            // Perform registration logic here since username/email is unique
+            // For example, insert the user data into the database
+            const sql = 'INSERT INTO patientData (fullName, emailAddress, password, userName) VALUES (?, ?, ?, ?)';
+            db.query(sql, [fullName, emailAddress, password, username], (err, result) => {
+                if (err) {
+                    res.status(500).send('Error saving user data');
+                    console.error(err);
+                    return;
+                }
+                res.status(200).send('User registered successfully');
+                res.redirect('/login.html');
+
+            });
         });
+    } else if (action === 'login') {
+        // Perform login logic here
+        // For example, verify the username and password against the database
+        const query = `SELECT patientID FROM patientData WHERE username = ? AND password = ?`;
+        db.query(query, [username, password], (err, result) => {
+            if (err) {
+                console.error("Error finding user:", err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+
+            if (result.length === 0) {
+                // No user found with the provided credentials
+                res.status(401).send("Invalid username or password");
+                return;
+            }
+
+            // Retrieve the patientID from the query result
+            const patientID = result[0].patientID;
+
+            // Store the patientID in the session
+            req.session.patientID = patientID;
+
+            res.redirect('/dashboard.html');
+        });
+    } else {
+        res.status(400).send("Invalid action");
+    }
 });
 
 
@@ -73,19 +123,66 @@ app.post('/saveData', (req, res) => {
 
 
 //get me to this html form
-app.get('/createAccount', (req, res) => {
-    // http://localhost:3000/createAccount
-    // res.sendFile(__dirname + '/index.html');
-    res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
-
-});
-
-
-
-app.post('/createAccount', (req, res) => {
-    res.status(200).send(req.body);
+// app.get('/createAccount', (req, res) => {
+//     console.log("Request received for /createAccount");
+//     console.log("__dirname:", __dirname);
+//     console.log("File path:", path.join(__dirname, '/../frontend/createAccount.html'));
     
+//     res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
+// });
+
+
+
+// Register endpoint
+app.post('/createAccount', (req, res) => {
+    const { fullName, emailAddress, password, username } = req.body;
+
+    // Hash the password
+    bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+        if (hashErr) {
+            console.error("Error hashing password:", hashErr);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        // Check if the username already exists
+        const checkQuery = 'SELECT * FROM patientData WHERE username = ?';
+        db.query(checkQuery, [username], (checkErr, checkResult) => {
+            if (checkErr) {
+                console.error("Error checking username:", checkErr);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+
+            if (checkResult.length > 0) {
+                // Username already exists
+                res.status(409).send("Username already exists");
+                return;
+            }
+
+            // If the username is unique, proceed with registration
+            const insertQuery = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
+            db.query(insertQuery, [fullName, emailAddress, hashedPassword, username], (insertErr, insertResult) => {
+                if (insertErr) {
+                    console.error("Error registering user:", insertErr);
+                    res.status(500).send("Internal Server Error");
+                    return;
+                }
+
+                // Registration successful
+                res.status(200).send("Registration successful");
+            });
+        });
+    });
 });
+
+
+
+// Route to serve the createAccount.html file
+app.get('/createAccount', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
+});
+
 
 // Display the form
 app.get('/saveBloodSugarData', (req, res) => {
@@ -146,10 +243,6 @@ app.post('/saveBloodSugarData', (req, res) => {
         });
     });
 });
-
-
-
-
 
 //get me to this html form
 //http://localhost:3000/user/4
@@ -212,11 +305,6 @@ app.post('/loginAccount', (req, res) => {
         res.redirect('/dashboard.html');
     });
 });
-
-
-
-
-
 
 
 //get me to this html form
@@ -289,6 +377,49 @@ app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, '/../frontend/dashboard.html'));
 });
 
+
+// // Register endpoint
+// app.post('/creatAccount', (req, res) => {
+//     const { fullName, emailAddress, password, username } = req.body;
+
+//     // Hash the password
+//     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+//         if (hashErr) {
+//             console.error("Error hashing password:", hashErr);
+//             res.status(500).send("Internal Server Error");
+//             return;
+//         }
+
+//         // Check if the username already exists
+//         const checkQuery = 'SELECT * FROM patientData WHERE username = ?';
+//         db.query(checkQuery, [username], (checkErr, checkResult) => {
+//             if (checkErr) {
+//                 console.error("Error checking username:", checkErr);
+//                 res.status(500).send("Internal Server Error");
+//                 return;
+//             }
+
+//             if (checkResult.length > 0) {
+//                 // Username already exists
+//                 res.status(409).send("Username already exists");
+//                 return;
+//             }
+
+//             // If the username is unique, proceed with registration
+//             const insertQuery = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
+//             db.query(insertQuery, [fullName, emailAddress, hashedPassword, username], (insertErr, insertResult) => {
+//                 if (insertErr) {
+//                     console.error("Error registering user:", insertErr);
+//                     res.status(500).send("Internal Server Error");
+//                     return;
+//                 }
+
+//                 // Registration successful
+//                 res.status(200).send("Registration successful");
+//             });
+//         });
+//     });
+// });
 
 
 

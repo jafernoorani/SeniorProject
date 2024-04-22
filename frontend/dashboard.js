@@ -18,6 +18,7 @@ function populateDashboard(data) {
 
     // Populate arrays and update chart and table
     data.forEach(entry => {
+        
         morningLevels.push(entry.morningLevel);
         afternoonLevels.push(entry.afternoonLevel);
         eveningLevels.push(entry.eveningLevel);
