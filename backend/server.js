@@ -108,26 +108,45 @@ app.post('/saveBloodSugarData', (req, res) => {
     console.log("Selected Date:", selectedDate);
     console.log("Patient ID:", patientID);
 
-    // Insert blood sugar data into MySQL database
-    const sql = 'INSERT INTO vitalData (patientID, vitalsTakenDate, vitalType, vitalValue) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)';
-    const values = [
-        patientID, selectedDate, 'BloodSugar - Morning', morningLevel,
-        patientID, selectedDate, 'BloodSugar - Afternoon', afternoonLevel,
-        patientID, selectedDate, 'BloodSugar - Evening', eveningLevel
-    ];
-
-    db.query(sql, values, (err, result) => {
-        if (err) {
-            // Log the database error for debugging
-            console.error("Error saving blood sugar data:", err);
-            res.status(500).send('Error saving blood sugar data');
+    // Check if there are already three entries for the selected date
+    const checkSql = 'SELECT COUNT(*) AS entryCount FROM vitalData WHERE patientID = ? AND vitalsTakenDate = ?';
+    db.query(checkSql, [patientID, selectedDate], (checkErr, checkResult) => {
+        if (checkErr) {
+            console.error("Error checking existing entries:", checkErr);
+            res.status(500).send('Error checking existing entries');
             return;
         }
-        // Log the successful data insertion for debugging
-        console.log("Blood sugar data saved successfully");
-        res.status(200).send('Blood sugar data saved successfully');
+
+        // Parse the count of existing entries
+        const entryCount = checkResult[0].entryCount;
+
+        // If there are already three entries, reject the new data
+        if (entryCount >= 3) {
+            console.log("Maximum entries reached for the selected date");
+            res.status(400).send('Maximum entries reached for the selected date');
+            return;
+        }
+
+        // If there are less than three entries, proceed with insertion
+        const sql = 'INSERT INTO vitalData (patientID, vitalsTakenDate, vitalType, vitalValue) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)';
+        const values = [
+            patientID, selectedDate, 'BloodSugar - Morning', morningLevel,
+            patientID, selectedDate, 'BloodSugar - Afternoon', afternoonLevel,
+            patientID, selectedDate, 'BloodSugar - Evening', eveningLevel
+        ];
+
+        db.query(sql, values, (insertErr, result) => {
+            if (insertErr) {
+                console.error("Error saving blood sugar data:", insertErr);
+                res.status(500).send('Error saving blood sugar data');
+                return;
+            }
+            console.log("Blood sugar data saved successfully");
+            res.status(200).send('Blood sugar data saved successfully');
+        });
     });
 });
+
 
 
 
