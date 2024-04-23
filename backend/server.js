@@ -9,6 +9,7 @@ const app = express();
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'backend')));
+app.use(express.json());
 
 
 // Middleware for session management
@@ -394,6 +395,53 @@ app.get('/analyticsWindow', (req, res) => {
     res.sendFile(path.join(__dirname, '/../frontend/analytics_Window.html'));
 });
 
+
+// Route to handle saving weight data
+app.post('/saveWeightData', (req, res) => {
+    const { weight, date, patientID } = req.body;
+  
+    // Check if weight is provided and not null
+    if (weight === null || weight === undefined || isNaN(weight)) {
+      return res.status(400).json({ error: 'Weight value is missing or invalid' });
+    }
+  
+    // Check if the entry already exists
+    db.query('SELECT * FROM weightData WHERE measurementDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
+      if (selectErr) {
+        console.error('Error checking for existing entry:', selectErr);
+        res.status(500).json({ error: 'Internal server error' });
+      } else {
+        if (selectResults.length > 0) {
+          // If entry already exists, return error
+          res.status(400).json({ error: 'Weight data for this date already exists' });
+        } else {
+          // If entry does not exist and weight value is valid, perform the insertion
+          db.query('INSERT INTO weightData (weight, measurementDate, patientID) VALUES (?, ?, ?)', [weight, date, patientID], (insertErr, insertResults) => {
+            if (insertErr) {
+              console.error('Error saving weight data:', insertErr);
+              res.status(500).json({ error: 'Internal server error' });
+            } else {
+              console.log('Weight data saved successfully');
+              res.status(200).json({ message: 'Weight data saved successfully' });
+            }
+          });
+        }
+      }
+    });
+});
+
+
+// POST endpoint to handle weight data
+// app.post('/saveWeightData', (req, res) => {
+//     console.log('Request Body:', req.body);
+
+//     const weight = req.body.weight;
+//     console.log('Weight:', weight); // Print the weight
+//     // Further processing of weight data goes here
+//     res.send({ message: 'Weight data received successfully.' });
+// });
+  
+  
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
