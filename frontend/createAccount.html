@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +18,6 @@
                         <h2 class="text-center">Create Your Account</h2>
                     </div>
                     <div class="card-body">
-                        <!--change this later for amazon EC2-->
                         <form id="signupForm" action="/saveData" method="POST">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="fullName" name="fullName" required placeholder="Full Name">
@@ -35,6 +34,8 @@
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" name="username" required placeholder="Username">
                             </div>
+                            <!-- Add a hidden input field to specify the action -->
+                            <input type="hidden" name="action" value="register">
                             <div class="form-group text-center">
                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                             </div>

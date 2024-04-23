@@ -73,16 +73,15 @@ app.post('/saveData', (req, res) => {
 
             // Perform registration logic here since username/email is unique
             // For example, insert the user data into the database
-            const sql = 'INSERT INTO patientData (fullName, emailAddress, password, userName) VALUES (?, ?, ?, ?)';
+            const sql = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
             db.query(sql, [fullName, emailAddress, password, username], (err, result) => {
                 if (err) {
                     res.status(500).send('Error saving user data');
                     console.error(err);
                     return;
                 }
-                res.status(200).send('User registered successfully');
-                res.redirect('/login.html');
-
+                // Redirect after successful registration
+                res.sendFile(path.join(__dirname, '/../frontend/login.html'));
             });
         });
     } else if (action === 'login') {
@@ -114,6 +113,7 @@ app.post('/saveData', (req, res) => {
         res.status(400).send("Invalid action");
     }
 });
+
 
 
 // // Route to handle form submission
@@ -378,51 +378,21 @@ app.get('/dashboard.html', (req, res) => {
 });
 
 
-// // Register endpoint
-// app.post('/creatAccount', (req, res) => {
-//     const { fullName, emailAddress, password, username } = req.body;
+app.get('/weightDashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/weightDashboard.html'));
+});
 
-//     // Hash the password
-//     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
-//         if (hashErr) {
-//             console.error("Error hashing password:", hashErr);
-//             res.status(500).send("Internal Server Error");
-//             return;
-//         }
+app.get('/weightDashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/weightDashboard.html'));
+});
 
-//         // Check if the username already exists
-//         const checkQuery = 'SELECT * FROM patientData WHERE username = ?';
-//         db.query(checkQuery, [username], (checkErr, checkResult) => {
-//             if (checkErr) {
-//                 console.error("Error checking username:", checkErr);
-//                 res.status(500).send("Internal Server Error");
-//                 return;
-//             }
+app.get('/account', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/account.html'));
+});
 
-//             if (checkResult.length > 0) {
-//                 // Username already exists
-//                 res.status(409).send("Username already exists");
-//                 return;
-//             }
-
-//             // If the username is unique, proceed with registration
-//             const insertQuery = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
-//             db.query(insertQuery, [fullName, emailAddress, hashedPassword, username], (insertErr, insertResult) => {
-//                 if (insertErr) {
-//                     console.error("Error registering user:", insertErr);
-//                     res.status(500).send("Internal Server Error");
-//                     return;
-//                 }
-
-//                 // Registration successful
-//                 res.status(200).send("Registration successful");
-//             });
-//         });
-//     });
-// });
-
-
-
+app.get('/analyticsWindow', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/analytics_Window.html'));
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
