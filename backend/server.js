@@ -398,13 +398,21 @@ app.get('/analyticsWindow', (req, res) => {
 
 // Route to handle saving weight data
 app.post('/saveWeightData', (req, res) => {
-    const { weight, date, patientID } = req.body;
+    const patientID = req.session.patientID;
+    console.log(patientID);
+    const { weight, date} = req.body;
+
   
+    console.log("this is new function 1 ");
+    console.log(weight);
+    console.log(date);
+
     // Check if weight is provided and not null
     if (weight === null || weight === undefined || isNaN(weight)) {
       return res.status(400).json({ error: 'Weight value is missing or invalid' });
     }
-  
+    console.log("this is new function 2");
+
     // Check if the entry already exists
     db.query('SELECT * FROM weightData WHERE measurementDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
       if (selectErr) {
