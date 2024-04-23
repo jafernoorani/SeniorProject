@@ -1,5 +1,7 @@
 // Assume this is the function to populate the dashboard with the fetched data
 function populateDashboard(data) {
+    console.log("FUCK THISSSSSS")
+    console.log(data)
     // Clear existing data
     morningLevels = [];
     afternoonLevels = [];
@@ -16,6 +18,7 @@ function populateDashboard(data) {
 
     // Populate arrays and update chart and table
     data.forEach(entry => {
+        
         morningLevels.push(entry.morningLevel);
         afternoonLevels.push(entry.afternoonLevel);
         eveningLevels.push(entry.eveningLevel);
@@ -27,7 +30,7 @@ function populateDashboard(data) {
 }
 
 // Fetch data from the server
-fetch('/api/dashboard')
+fetch('/dashboard.html')
     .then(response => response.json())
     .then(data => {
         // Once data is fetched, populate the dashboard
@@ -36,7 +39,6 @@ fetch('/api/dashboard')
     .catch(error => {
         console.error('Error fetching data:', error);
     });
-
 
 
 
@@ -70,75 +72,81 @@ function updateChart(chart, label, morning, afternoon, evening) {
     chart.update();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const bloodSugarChartCanvas = document.getElementById('bloodSugarChart').getContext('2d');
-    const bloodSugarChart = new Chart(bloodSugarChartCanvas, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: 'Morning Levels',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderWidth: 1,
-                    data: []
-                },
-                {
-                    label: 'Afternoon Levels',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderWidth: 1,
-                    data: []
-                },
-                {
-                    label: 'Evening Levels',
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                    borderWidth: 1,
-                    data: []
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+// Prepare the chart
+const bloodSugarChartCanvas = document.getElementById('bloodSugarChart').getContext('2d');
+const chartConfig = {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [
+            {
+                label: 'Morning Levels',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                data: []
+            },
+            {
+                label: 'Afternoon Levels',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: []
+            },
+            {
+                label: 'Evening Levels',
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                data: []
             }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'day'
+                }
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
         }
-    });
+    }
+};
+let bloodSugarChart = new Chart(bloodSugarChartCanvas, chartConfig);
 
-    // Handle form submission for new blood sugar levels
-    document.getElementById('submit-levels').addEventListener('click', function() {
-        const morningInput = document.getElementById('morning-level').value;
-        const afternoonInput = document.getElementById('afternoon-level').value;
-        const eveningInput = document.getElementById('evening-level').value;
-        const currentDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+// Handle form submission
+document.getElementById('submit-levels').addEventListener('click', function() {
+    const morningInput = document.getElementById('morning-level').value;
+    const afternoonInput = document.getElementById('afternoon-level').value;
+    const eveningInput = document.getElementById('evening-level').value;
+    const currentDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
 
-        bloodSugarChart.data.labels.push(currentDate);
-        bloodSugarChart.data.datasets[0].data.push(morningInput);
-        bloodSugarChart.data.datasets[1].data.push(afternoonInput);
-        bloodSugarChart.data.datasets[2].data.push(eveningInput);
-        bloodSugarChart.update();
+    morningLevels.push(morningInput);
+    afternoonLevels.push(afternoonInput);
+    eveningLevels.push(eveningInput);
+    dates.push(currentDate);
 
-        // Optionally reset input fields
-        document.getElementById('morning-level').value = '';
-        document.getElementById('afternoon-level').value = '';
-        document.getElementById('evening-level').value = '';
-    });
+    updateChart(bloodSugarChart, currentDate, morningInput, afternoonInput, eveningInput);
+    addDataToTable(currentDate, morningInput, afternoonInput, eveningInput);
 
-    // Update the summary when a new date is picked - if applicable
-    document.getElementById('selectedDate').addEventListener('change', function(event) {
-        const selectedDate = event.target.value;
-        // Implement functionality to filter and update UI based on selectedDate
-    });
+    document.getElementById('morning-level').value = '';
+    document.getElementById('afternoon-level').value = '';
+    document.getElementById('evening-level').value = '';
 });
 
+// Update the summary when a new date is picked
+document.getElementById('datePicker').addEventListener('change', function() {
+    const selectedDate = this.value;
+    updateSummaryForDate(selectedDate);
+});
 
 // Function to clear the summary table except for the header
 function clearSummaryTable() {

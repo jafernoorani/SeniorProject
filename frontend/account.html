@@ -64,20 +64,27 @@
                 <a href="dashboard.html"><i class="fas fa-chart-line"></i> Diabetes</a>
             </li>
             <li>
-                <a href="weightDashboard.html"><i class="fas fa-weight"></i> Weight</a>
+                <a href="/weightDashboard"><i class="fas fa-weight"></i> Weight</a>
             </li>
             <li>
                 <a href="#"><i class="fas fa-file-alt"></i> Reports</a>
             </li>
             <li>
-                <a href="analytics_window.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="/analyticsWindow"><i class="fas fa-chart-bar"></i> Analytics</a>
             </li>
             <li>
                 <a href="export.html"><i class="fas fa-file-export"></i> Export</a>
             </li>
             <li class="active">
-                <a href="account.html"><i class="fas fa-user"></i> Account</a>
+                <a href="/account"><i class="fas fa-user"></i> Account</a>
             </li>
+            <li class="active">
+                <form id="logoutForm" action="/logout" method="POST">
+                    <button id="logoutButton" class="btn btn-link" type="submit">
+                        <i class="fas fa-user"></i> Log Out
+                    </button>
+                </form>                                              
+            </li> 
         </ul>
     </nav>
     <div class="content">

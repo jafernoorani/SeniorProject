@@ -9,6 +9,7 @@ const app = express();
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'backend')));
+app.use(express.json());
 
 
 // Middleware for session management
@@ -32,7 +33,7 @@ app.use((req, res, next) => {
 
 // Create connection to MySQL database
 const db = mysql.createConnection({
-    host: '54.226.103.123',
+    host: '54.147.218.254',
     port: 3306,
     user: 'author',
     password: 'authorpass123',
@@ -50,20 +51,70 @@ db.connect((err) => {
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: false }));
 
-// Route to handle form submission
+// Route to handle form submission (for both registration and login)
 app.post('/saveData', (req, res) => {
-    const { fullName, emailAddress, password, username } = req.body;
+    const { fullName, emailAddress, password, username, action } = req.body;
 
-        // Insert user data into MySQL database
-        const sql = 'INSERT INTO patientData (fullName, emailAddress, password, userName) VALUES (?, ?, ?, ?)';
-        db.query(sql, [fullName, emailAddress, password, username], (err, result) => {
-            if (err) {
-                res.status(500).send('Error saving user data');
-                throw err;
+    // Check the value of the 'action' parameter to determine the action
+    if (action === 'register') {
+        // Check if the username or email already exists
+        const checkQuery = 'SELECT * FROM patientData WHERE username = ? OR emailAddress = ?';
+        db.query(checkQuery, [username, emailAddress], (checkErr, checkResult) => {
+            if (checkErr) {
+                console.error("Error checking username/email:", checkErr);
+                res.status(500).send("Internal Server Error");
+                return;
             }
-            res.status(200).send('User registered successfully');
+
+            if (checkResult.length > 0) {
+                // Username or email already exists
+                res.status(409).send("Username or email already exists");
+                return;
+            }
+
+            // Perform registration logic here since username/email is unique
+            // For example, insert the user data into the database
+            const sql = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
+            db.query(sql, [fullName, emailAddress, password, username], (err, result) => {
+                if (err) {
+                    res.status(500).send('Error saving user data');
+                    console.error(err);
+                    return;
+                }
+                // Redirect after successful registration
+                res.sendFile(path.join(__dirname, '/../frontend/login.html'));
+            });
         });
+    } else if (action === 'login') {
+        // Perform login logic here
+        // For example, verify the username and password against the database
+        const query = `SELECT patientID FROM patientData WHERE username = ? AND password = ?`;
+        db.query(query, [username, password], (err, result) => {
+            if (err) {
+                console.error("Error finding user:", err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+
+            if (result.length === 0) {
+                // No user found with the provided credentials
+                res.status(401).send("Invalid username or password");
+                return;
+            }
+
+            // Retrieve the patientID from the query result
+            const patientID = result[0].patientID;
+
+            // Store the patientID in the session
+            req.session.patientID = patientID;
+
+            res.redirect('/dashboard.html');
+        });
+    } else {
+        res.status(400).send("Invalid action");
+    }
 });
+
 
 
 // // Route to handle form submission
@@ -73,19 +124,66 @@ app.post('/saveData', (req, res) => {
 
 
 //get me to this html form
-app.get('/createAccount', (req, res) => {
-    // http://localhost:3000/createAccount
-    // res.sendFile(__dirname + '/index.html');
-    res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
-
-});
-
-
-
-app.post('/createAccount', (req, res) => {
-    res.status(200).send(req.body);
+// app.get('/createAccount', (req, res) => {
+//     console.log("Request received for /createAccount");
+//     console.log("__dirname:", __dirname);
+//     console.log("File path:", path.join(__dirname, '/../frontend/createAccount.html'));
     
+//     res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
+// });
+
+
+
+// Register endpoint
+app.post('/createAccount', (req, res) => {
+    const { fullName, emailAddress, password, username } = req.body;
+
+    // Hash the password
+    bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+        if (hashErr) {
+            console.error("Error hashing password:", hashErr);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+
+        // Check if the username already exists
+        const checkQuery = 'SELECT * FROM patientData WHERE username = ?';
+        db.query(checkQuery, [username], (checkErr, checkResult) => {
+            if (checkErr) {
+                console.error("Error checking username:", checkErr);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+
+            if (checkResult.length > 0) {
+                // Username already exists
+                res.status(409).send("Username already exists");
+                return;
+            }
+
+            // If the username is unique, proceed with registration
+            const insertQuery = 'INSERT INTO patientData (fullName, emailAddress, password, username) VALUES (?, ?, ?, ?)';
+            db.query(insertQuery, [fullName, emailAddress, hashedPassword, username], (insertErr, insertResult) => {
+                if (insertErr) {
+                    console.error("Error registering user:", insertErr);
+                    res.status(500).send("Internal Server Error");
+                    return;
+                }
+
+                // Registration successful
+                res.status(200).send("Registration successful");
+            });
+        });
+    });
 });
+
+
+
+// Route to serve the createAccount.html file
+app.get('/createAccount', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
+});
+
 
 // Display the form
 app.get('/saveBloodSugarData', (req, res) => {
@@ -108,29 +206,44 @@ app.post('/saveBloodSugarData', (req, res) => {
     console.log("Selected Date:", selectedDate);
     console.log("Patient ID:", patientID);
 
-    // Insert blood sugar data into MySQL database
-    const sql = 'INSERT INTO vitalData (patientID, vitalsTakenDate, vitalType, vitalValue) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)';
-    const values = [
-        patientID, selectedDate, 'BloodSugar - Morning', morningLevel,
-        patientID, selectedDate, 'BloodSugar - Afternoon', afternoonLevel,
-        patientID, selectedDate, 'BloodSugar - Evening', eveningLevel
-    ];
-
-    db.query(sql, values, (err, result) => {
-        if (err) {
-            // Log the database error for debugging
-            console.error("Error saving blood sugar data:", err);
-            res.status(500).send('Error saving blood sugar data');
+    // Check if there are already three entries for the selected date
+    const checkSql = 'SELECT COUNT(*) AS entryCount FROM vitalData WHERE patientID = ? AND vitalsTakenDate = ?';
+    db.query(checkSql, [patientID, selectedDate], (checkErr, checkResult) => {
+        if (checkErr) {
+            console.error("Error checking existing entries:", checkErr);
+            res.status(500).send('Error checking existing entries');
             return;
         }
-        // Log the successful data insertion for debugging
-        console.log("Blood sugar data saved successfully");
-        res.status(200).send('Blood sugar data saved successfully');
+
+        // Parse the count of existing entries
+        const entryCount = checkResult[0].entryCount;
+
+        // If there are already three entries, reject the new data
+        if (entryCount >= 3) {
+            console.log("Maximum entries reached for the selected date");
+            res.status(400).send('Maximum entries reached for the selected date');
+            return;
+        }
+
+        // If there are less than three entries, proceed with insertion
+        const sql = 'INSERT INTO vitalData (patientID, vitalsTakenDate, vitalType, vitalValue) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)';
+        const values = [
+            patientID, selectedDate, 'BloodSugar - Morning', morningLevel,
+            patientID, selectedDate, 'BloodSugar - Afternoon', afternoonLevel,
+            patientID, selectedDate, 'BloodSugar - Evening', eveningLevel
+        ];
+
+        db.query(sql, values, (insertErr, result) => {
+            if (insertErr) {
+                console.error("Error saving blood sugar data:", insertErr);
+                res.status(500).send('Error saving blood sugar data');
+                return;
+            }
+            console.log("Blood sugar data saved successfully");
+            res.status(200).send('Blood sugar data saved successfully');
+        });
     });
 });
-
-
-
 
 //get me to this html form
 //http://localhost:3000/user/4
@@ -193,11 +306,6 @@ app.post('/loginAccount', (req, res) => {
         res.redirect('/dashboard.html');
     });
 });
-
-
-
-
-
 
 
 //get me to this html form
@@ -271,9 +379,77 @@ app.get('/dashboard.html', (req, res) => {
 });
 
 
+app.get('/weightDashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/weightDashboard.html'));
+});
+
+app.get('/weightDashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/weightDashboard.html'));
+});
+
+app.get('/account', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/account.html'));
+});
+
+app.get('/analyticsWindow', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/analytics_Window.html'));
+});
 
 
+// Route to handle saving weight data
+app.post('/saveWeightData', (req, res) => {
+    const patientID = req.session.patientID;
+    console.log(patientID);
+    const { weight, date} = req.body;
 
+  
+    console.log("this is new function 1 ");
+    console.log(weight);
+    console.log(date);
+
+    // Check if weight is provided and not null
+    if (weight === null || weight === undefined || isNaN(weight)) {
+      return res.status(400).json({ error: 'Weight value is missing or invalid' });
+    }
+    console.log("this is new function 2");
+
+    // Check if the entry already exists
+    db.query('SELECT * FROM weightData WHERE measurementDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
+      if (selectErr) {
+        console.error('Error checking for existing entry:', selectErr);
+        res.status(500).json({ error: 'Internal server error' });
+      } else {
+        if (selectResults.length > 0) {
+          // If entry already exists, return error
+          res.status(400).json({ error: 'Weight data for this date already exists' });
+        } else {
+          // If entry does not exist and weight value is valid, perform the insertion
+          db.query('INSERT INTO weightData (weight, measurementDate, patientID) VALUES (?, ?, ?)', [weight, date, patientID], (insertErr, insertResults) => {
+            if (insertErr) {
+              console.error('Error saving weight data:', insertErr);
+              res.status(500).json({ error: 'Internal server error' });
+            } else {
+              console.log('Weight data saved successfully');
+              res.status(200).json({ message: 'Weight data saved successfully' });
+            }
+          });
+        }
+      }
+    });
+});
+
+
+// POST endpoint to handle weight data
+// app.post('/saveWeightData', (req, res) => {
+//     console.log('Request Body:', req.body);
+
+//     const weight = req.body.weight;
+//     console.log('Weight:', weight); // Print the weight
+//     // Further processing of weight data goes here
+//     res.send({ message: 'Weight data received successfully.' });
+// });
+  
+  
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
