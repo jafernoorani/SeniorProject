@@ -207,7 +207,7 @@ app.post('/saveBloodSugarData', (req, res) => {
     console.log("Patient ID:", patientID);
 
     // Check if there are already three entries for the selected date
-    const checkSql = 'SELECT COUNT(*) AS entryCount FROM vitalData WHERE patientID = ? AND vitalsTakenDate = ?';
+    const checkSql = 'SELECT COUNT(*) AS entryCount FROM vitalData WHERE patientID = ? AND vitalsTakenDate = ? AND vitalType like "BloodSugar%"';
     db.query(checkSql, [patientID, selectedDate], (checkErr, checkResult) => {
         if (checkErr) {
             console.error("Error checking existing entries:", checkErr);
@@ -356,7 +356,7 @@ app.get('/api/dashboard', (req, res) => {
     const patientID = req.session.patientID;
 
     // Fetch data from the database for the specific patient
-    const sql = 'SELECT * FROM vitalData WHERE patientID = ?';
+    const sql = 'SELECT * FROM vitalData WHERE patientID = ? AND vitalType like "BloodSugar%"';
     db.query(sql, [patientID], (err, results) => {
         if (err) {
             console.error("Error fetching data from database:", err);
@@ -364,7 +364,7 @@ app.get('/api/dashboard', (req, res) => {
         }
 
         // Log the fetched data to the console
-        console.log("Patient's Vital Data:");
+        console.log("Patient's Blood Sugar Data:");
         console.log(results);
 
         // Send the fetched data as JSON
@@ -398,12 +398,12 @@ app.get('/analyticsWindow', (req, res) => {
 
 // Route to handle saving weight data
 app.post('/saveWeightData', (req, res) => {
+    // get patientID
     const patientID = req.session.patientID;
+
+    // Log recieved data
     console.log(patientID);
     const { weight, date} = req.body;
-
-  
-    console.log("this is new function 1 ");
     console.log(weight);
     console.log(date);
 
@@ -414,7 +414,7 @@ app.post('/saveWeightData', (req, res) => {
     console.log("this is new function 2");
 
     // Check if the entry already exists
-    db.query('SELECT * FROM weightData WHERE measurementDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
+    db.query('SELECT * FROM vitalData WHERE vitalType = "Weight" AND vitalsTakenDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
       if (selectErr) {
         console.error('Error checking for existing entry:', selectErr);
         res.status(500).json({ error: 'Internal server error' });
@@ -424,7 +424,7 @@ app.post('/saveWeightData', (req, res) => {
           res.status(400).json({ error: 'Weight data for this date already exists' });
         } else {
           // If entry does not exist and weight value is valid, perform the insertion
-          db.query('INSERT INTO weightData (weight, measurementDate, patientID) VALUES (?, ?, ?)', [weight, date, patientID], (insertErr, insertResults) => {
+          db.query('INSERT INTO vitalData (Weight, vitalTakenData, patientID) VALUES (?, ?, ?)', [weight, date, patientID], (insertErr, insertResults) => {
             if (insertErr) {
               console.error('Error saving weight data:', insertErr);
               res.status(500).json({ error: 'Internal server error' });
@@ -439,6 +439,30 @@ app.post('/saveWeightData', (req, res) => {
 });
 
 
+// Middleware function to fetch data from the database
+app.get('/api/weight', (req, res) => {
+    if (!req.session.patientID) {
+        res.status(403).send("Access Denied");
+        return;
+    }
+    const patientID = req.session.patientID;
+
+    // Fetch data from the database for the specific patient
+    const sql = 'SELECT * FROM vitalData WHERE patientID = ? AND vitalType = "Weight"';
+    db.query(sql, [patientID], (err, results) => {
+        if (err) {
+            console.error("Error fetching data from database:", err);
+            return res.status(500).send("Internal Server Error");
+        }
+
+        // Log the fetched data to the console
+        console.log("Patient's Weight Data:");
+        console.log(results);
+
+        // Send the fetched data as JSON
+        res.json(results);
+    });
+});
 // POST endpoint to handle weight data
 // app.post('/saveWeightData', (req, res) => {
 //     console.log('Request Body:', req.body);
