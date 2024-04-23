@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 // Create connection to MySQL database
 const db = mysql.createConnection({
-    host: '54.226.103.123',
+    host: '54.147.218.254',
     port: 3306,
     user: 'author',
     password: 'authorpass123',
