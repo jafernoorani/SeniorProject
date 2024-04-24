@@ -259,6 +259,59 @@ app.get('/user/:id', (req, res) => {
         });
 });
 
+// Endpoint to update user account details
+// Node.js/Express server setup
+
+app.post('/updateAccount', (req, res) => {
+    const { username, email, age, dob, weight, height, medicalConditions } = req.body;
+
+    const updateQuery = `UPDATE patientData SET
+                            emailAddress = ?,
+                            Age = ?,
+                            doB = ?,
+                            Weight = ?,
+                            Height_in = ?,
+                            Symptoms = ?
+                         WHERE username = ?;`;
+
+    db.query(updateQuery, [email, age, dob, weight, height, medicalConditions, username], (error, results) => {
+        if (error) {
+            console.error('Failed to update account:', error);
+            return res.status(500).send('Error updating account');
+        }
+        // Send a simple response text or HTML
+        res.send('Account updated successfully'); // Simple text response
+    });
+});
+
+
+
+
+
+
+app.get('/getCurrentUserData', (req, res) => {
+    if (!req.session.patientID) {
+        return res.status(403).send('Not authorized');
+    }
+
+    const patientID = req.session.patientID;
+    const query = 'SELECT username, emailAddress, Age, doB, Weight, Height_in, Symptoms FROM patientData WHERE patientID = ?';
+
+    db.query(query, [patientID], (err, results) => {
+        if (err) {
+            console.error("Error fetching user data:", err);
+            return res.status(500).send('Error fetching user data');
+        }
+
+        if (results.length > 0) {
+            const userData = results[0];
+            res.json(userData);
+        } else {
+            res.status(404).send('User not found');
+        }
+    });
+});
+
 
 
 //login stuff
@@ -463,6 +516,34 @@ app.get('/api/weight', (req, res) => {
         res.json(results);
     });
 });
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    // Assuming password is hashed and checked here
+    const loginQuery = 'SELECT patientID, password FROM patientData WHERE username = ?';
+    db.query(loginQuery, [username], (error, results) => {
+        if (error) {
+            console.error("Error during login:", error);
+            return res.status(500).send("Internal Server Error");
+        }
+        if (results.length > 0) {
+            const user = results[0];
+            // Here you should compare the hashed password; this example skips this step for brevity
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (result) {
+                    req.session.patientID = user.patientID; // Store patientID in session
+                    res.redirect('/dashboard.html');
+                } else {
+                    res.status(401).send('Invalid username or password');
+                }
+            });
+        } else {
+            res.status(401).send('Invalid username or password');
+        }
+    });
+});
+
+
 // POST endpoint to handle weight data
 // app.post('/saveWeightData', (req, res) => {
 //     console.log('Request Body:', req.body);

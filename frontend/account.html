@@ -89,51 +89,131 @@
     </nav>
     <div class="content">
         <h2>Account Settings</h2>
-        <form>
+        <form id="updateForm" method="POST" action="/updateAccount">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" class="form-control" id="username" placeholder="Enter username">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter email">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" placeholder="Password">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
             </div>
             <div class="form-group">
                 <label for="age">Age:</label>
-                <input type="number" class="form-control" id="age" placeholder="Enter your age">
+                <input type="number" class="form-control" id="age" name="age" placeholder="Enter your age">
             </div>
             <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter your date of birth">
+            </div>            
+            <div class="form-group">
                 <label for="weight">Weight (kg):</label>
-                <input type="number" class="form-control" id="weight" placeholder="Enter your weight">
+                <input type="number" class="form-control" id="weight" name="weight" placeholder="Enter your weight">
             </div>
             <div class="form-group">
                 <label for="height">Height (cm):</label>
-                <input type="number" class="form-control" id="height" placeholder="Enter your height">
-            </div>
-            <div class="form-group">
-                <label for="gender">Gender:</label>
-                <select class="form-control" id="gender">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
+                <input type="number" class="form-control" id="height" name="height" placeholder="Enter your height">
             </div>
             <div class="form-group">
                 <label for="medical-conditions">Medical Conditions:</label>
-                <textarea class="form-control" id="medical-conditions" placeholder="Describe any medical conditions"></textarea>
+                <textarea class="form-control" id="medical-conditions" name="medicalConditions" placeholder="Describe any medical conditions"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
 
+    <!-- Modal Structure -->
+        <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resultModalLabel">Update Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMessage">No message loaded</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
     <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to load user data
+        function loadData() {
+            fetch('/getCurrentUserData')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('username').value = data.username || '';
+                document.getElementById('email').value = data.emailAddress || '';
+                document.getElementById('age').value = data.Age || '';
+                document.getElementById('dob').value = data.doB || '';
+                document.getElementById('weight').value = data.Weight || '';
+                document.getElementById('height').value = data.Height_in || '';
+                document.getElementById('medical-conditions').value = data.Symptoms || '';
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+        }
+
+        // Call loadData on page load to populate fields
+        loadData();
+
+        // Get the form element
+        var updateForm = document.getElementById('updateForm');
+        if (updateForm) {
+            updateForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Stop the form from submitting normally
+
+                // Create a FormData object, passing the form as a parameter
+                var formData = new FormData(updateForm);
+                fetch('/updateAccount', {
+                    method: 'POST',
+                    body: new URLSearchParams(formData),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server responded with an error!');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    document.getElementById('modalMessage').textContent = text; // Assuming your server sends back a text message
+                    $('#resultModal').modal('show'); // Show the modal on success
+                })
+                .catch(err => {
+                    console.error('Failed to update account:', err);
+                    alert('Error updating account: ' + err.message);
+                });
+            });
+        } else {
+            console.error('Form not found');
+        }
+    });
+</script>                  
 </body>
 </html>
