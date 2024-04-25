@@ -117,22 +117,6 @@ app.post('/saveData', (req, res) => {
 
 
 
-// // Route to handle form submission
-// app.get('/test', (req, res) => {
-//     res.status(200).send('Yay!');
-// });
-
-
-//get me to this html form
-// app.get('/createAccount', (req, res) => {
-//     console.log("Request received for /createAccount");
-//     console.log("__dirname:", __dirname);
-//     console.log("File path:", path.join(__dirname, '/../frontend/createAccount.html'));
-    
-//     res.sendFile(path.join(__dirname, '/../frontend/createAccount.html'));
-// });
-
-
 
 // Register endpoint
 app.post('/createAccount', (req, res) => {
@@ -314,16 +298,7 @@ app.get('/getCurrentUserData', (req, res) => {
 
 
 
-//login stuff
-// app.post('/loginAccount', (req, res) => {
-//     res.status(200).send(req.body);
-//     //logic for verifying username and password
-//     //select query and check if the result has a value
 
-
-//     //if yes --> update patientTable --> isLoggedIn
-//     //then send them to the next paoge
-// });
 
 
 // Login endpoint
@@ -451,45 +426,71 @@ app.get('/analyticsWindow', (req, res) => {
 
 // Route to handle saving weight data
 app.post('/saveWeightData', (req, res) => {
-    // get patientID
+    const { weight, date } = req.body;
     const patientID = req.session.patientID;
 
-    // Log recieved data
-    console.log(patientID);
-    const { weight, date} = req.body;
-    console.log(weight);
-    console.log(date);
-
-    // Check if weight is provided and not null
-    if (weight === null || weight === undefined || isNaN(weight)) {
-      return res.status(400).json({ error: 'Weight value is missing or invalid' });
+    if (!weight || !date) {
+        return res.status(400).send({ error: 'Both weight and date must be provided.' });
     }
-    console.log("this is new function 2");
 
-    // Check if the entry already exists
-    db.query('SELECT * FROM vitalData WHERE vitalType = "Weight" AND vitalsTakenDate = ? AND patientID = ?', [date, patientID], (selectErr, selectResults) => {
-      if (selectErr) {
-        console.error('Error checking for existing entry:', selectErr);
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        if (selectResults.length > 0) {
-          // If entry already exists, return error
-          res.status(400).json({ error: 'Weight data for this date already exists' });
-        } else {
-          // If entry does not exist and weight value is valid, perform the insertion
-          db.query('INSERT INTO vitalData (Weight, vitalTakenData, patientID) VALUES (?, ?, ?)', [weight, date, patientID], (insertErr, insertResults) => {
-            if (insertErr) {
-              console.error('Error saving weight data:', insertErr);
-              res.status(500).json({ error: 'Internal server error' });
-            } else {
-              console.log('Weight data saved successfully');
-              res.status(200).json({ message: 'Weight data saved successfully' });
-            }
-          });
+    const checkQuery = 'SELECT * FROM weightData WHERE patientID = ? AND measurementDate = ?';
+    db.query(checkQuery, [patientID, date], (err, results) => {
+        if (err) {
+            console.error('Error checking for existing weight entry:', err);
+            return res.status(500).send({ error: 'Error checking for existing weight entry' });
         }
-      }
+        if (results.length > 0) {
+            return res.status(409).send({ error: 'Weight entry for this date already exists' });
+        }
+
+        const insertQuery = 'INSERT INTO weightData (patientID, weight, measurementDate) VALUES (?, ?, ?)';
+        db.query(insertQuery, [patientID, weight, date], (insertErr, insertResults) => {
+            if (insertErr) {
+                console.error('Error inserting weight data:', insertErr);
+                return res.status(500).send({ error: 'Error inserting weight data' });
+            }
+            res.status(200).send({ message: 'Weight data added successfully' });
+        });
     });
 });
+
+
+
+app.get('/fetchWeightData', (req, res) => {
+    const patientID = req.session.patientID; // Ensure the patientID is set correctly in session
+
+    if (!patientID) {
+        return res.status(403).send('No session found. Please log in.');
+    }
+
+    const fetchQuery = 'SELECT weight, measurementDate FROM weightData WHERE patientID = ? ORDER BY measurementDate DESC';
+    db.query(fetchQuery, [patientID], (err, results) => {
+        if (err) {
+            console.error('Error fetching weight data:', err);
+            return res.status(500).send('Error fetching weight data');
+        }
+        res.json(results);
+    });
+});
+
+// Endpoint to fetch weight data for a logged-in user
+app.get('/getWeightData', (req, res) => {
+    const patientID = req.session.patientID;
+    if (!patientID) {
+        return res.status(403).send('Session is invalid or expired');
+    }
+
+    const query = "SELECT weight, measurementDate FROM weightData WHERE patientID = ?";
+    db.query(query, [patientID], (err, results) => {
+        if (err) {
+            console.error('Failed to retrieve weight data:', err);
+            return res.status(500).send('Failed to retrieve weight data');
+        }
+        console.log(results);  // Check what's actually being sent back
+        res.json(results);
+    });
+});
+
 
 
 // Middleware function to fetch data from the database
@@ -544,16 +545,7 @@ app.post('/login', (req, res) => {
 });
 
 
-// POST endpoint to handle weight data
-// app.post('/saveWeightData', (req, res) => {
-//     console.log('Request Body:', req.body);
 
-//     const weight = req.body.weight;
-//     console.log('Weight:', weight); // Print the weight
-//     // Further processing of weight data goes here
-//     res.send({ message: 'Weight data received successfully.' });
-// });
-  
   
 // Start the server
 const port = process.env.PORT || 3000;
