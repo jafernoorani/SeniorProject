@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS patientData(
     emailAddress VARCHAR(255) NOT NULL,
     userName VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
-    Height_in FLOAT NOT NULL,
+    Height_in FLOAT,
     Age INT(11),
     bloodData VARCHAR(10),
     Symptoms TEXT,
