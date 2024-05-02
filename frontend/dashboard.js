@@ -190,7 +190,7 @@ function updateSummaryForDate(selectedDate) {
 // Event listener for date change to update the summary table
 document.getElementById('selectedDate').addEventListener('change', function(event) {
     const selectedDate = event.target.value;
-    console.log("Selected Date:", selectedDate); // Add this line for debugging
+    console.log("Selected Date:", selectedDate); 
     updateSummaryForDate(selectedDate);
 });
 

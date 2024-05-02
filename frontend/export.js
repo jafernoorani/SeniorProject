@@ -9,7 +9,7 @@ document.getElementById('exportBtn').addEventListener('click', function() {
     switch (exportFormat) {
         case 'csv':
             filename += ".csv";
-            content = convertToCSV(); // Assuming you have a function that returns CSV content
+            content = convertToCSV(); 
             break;
         case 'json':
             filename += ".json";
@@ -17,7 +17,7 @@ document.getElementById('exportBtn').addEventListener('click', function() {
             break;
         case 'pdf':
             generateAndDownloadPDF(filename, pageType);
-            return; // Skip the download logic below for PDFs as it's handled in its own function
+            return; 
         default:
             filename += ".txt";
             content = "This is a placeholder for " + pageType + " data.";
