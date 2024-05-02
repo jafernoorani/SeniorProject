@@ -1,10 +1,12 @@
+// UNCOMMENT FOR PRODUCTION
+// const dotenv = require('dotenv');
+const path = require('path');
+//dotenv.config({ path: path.resolve(__dirname, './.env') })
 const express = require('express');
 const html = require('html');
 const session = require('express-session');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
-const path = require('path');
-
 const app = express();
 
 // Serve static files from the 'public' directory
@@ -33,12 +35,22 @@ app.use((req, res, next) => {
 
 // Create connection to MySQL database
 const db = mysql.createConnection({
-    host: '54.147.218.254',
+    host: '172.31.23.97',
     port: 3306,
     user: 'author',
     password: 'authorpass123',
-    database: 'SugarDaddy'
+    database: 'SugarDaddy', 
+    // UNCOMMENT FOR PRODUCTION
+    /*
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DATABASE,
+    */
 });
+
+// console.log(db);
 
 // Connect to MySQL
 db.connect((err) => {
