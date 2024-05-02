@@ -173,6 +173,10 @@ app.post('/createAccount', (req, res) => {
     });
 });
 
+// Homepage landing
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'backend/homepage.html'));
+});
 
 
 // Route to serve the createAccount.html file
