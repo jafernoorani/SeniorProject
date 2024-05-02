@@ -175,7 +175,7 @@ app.post('/createAccount', (req, res) => {
 
 // Homepage landing
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/homepage.html'));
+    res.sendFile(path.join(__dirname, '/../frontend/homepage.html'));
 });
 
 
