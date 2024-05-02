@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
 // Create connection to MySQL database
 const db = mysql.createConnection({
-    host: '172.31.23.97',
+    host: '54.91.35.159',
     port: 3306,
     user: 'author',
     password: 'authorpass123',
@@ -556,9 +556,12 @@ app.post('/login', (req, res) => {
     });
 });
 
+// Route to serve the login.html file directly
+app.get('/loginAccount', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../frontend/login.html')); // Ensure the path correctly points to your login HTML file
+});
 
 
-  
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
