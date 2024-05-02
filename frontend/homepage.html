@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Sugar Daddy</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .hero {
+            background: #007bff;
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .feature {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .feature-icon {
+            font-size: 48px;
+            color: #007bff;
+        }
+        .btn-custom {
+            background-color: #ffffff; /* Bootstrap Danger Color for Contrast */
+            border-color: #000000;
+        }
+        .btn-custom:hover {
+            background-color: #6b63e0;
+            border-color: #6b63e0;
+        }
+        footer {
+            background-color: #343a40;
+            color: #adb5bd;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto; /* Pushes the footer to the bottom */
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to Sugar Daddy</h1>
+        <p>Manage your diabetes effectively with our comprehensive dashboard.</p>
+        <a href="/loginAccount" class="btn btn-custom btn-lg">Go to Login/Register</a> <!-- Link changed to server route -->
+    </div>
+
+
+    <!-- Features Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 text-center feature">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Track Your Levels</h3>
+                <p>Keep a daily log of your blood sugar levels and monitor trends.</p>
+            </div>
+            <div class="col-md-4 text-center feature">
+                <i class="fas fa-weight feature-icon"></i>
+                <h3>Weight Management</h3>
+                <p>Track your weight changes and understand how they affect your health.</p>
+            </div>
+            <div class="col-md-4 text-center feature">
+                <i class="fas fa-chart-bar feature-icon"></i>
+                <h3>Detailed Analytics</h3>
+                <p>Get detailed insights with custom reports and analytics.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Sugar Daddy © 2024. All rights reserved.</p>
+        <p>Connect with us: <i class="fab fa-facebook"></i> <i class="fab fa-twitter"></i> <i class="fab fa-instagram"></i></p>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
